@@ -1,3 +1,5 @@
 /out
 *.pdf
+*PuertoMaritimo.vpp.bak*
+*PuertoMaritimo.vpp.lck*
 *.zip
