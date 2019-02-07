@@ -11,7 +11,7 @@ public class Puerta {
     /**
      * Instancia Singleton de la puerta
      */
-    private Puerta instancia = null;
+    private static Puerta instancia = null;
 
     /**
      * Constructor por defecto. Inicializa la instancia Singleton
@@ -26,7 +26,7 @@ public class Puerta {
      * @param barco
      */
     public void entrar(Barco barco) {
-        System.out.println("El barco con ID: " + barco.getIdentificador() + " entra");
+        mostrarMensaje("El barco con ID: " + barco.getIdentificador() + " entra");
     }
 
     /**
@@ -35,18 +35,27 @@ public class Puerta {
      * @param barco
      */
     public void salir(Barco barco) {
-        System.out.println("El barco con ID: " + barco.getIdentificador() + " sale");
+        mostrarMensaje("El barco con ID: " + barco.getIdentificador() + " sale");
     }
 
     /**
      * @return la instancia Singleton de la clase Puerta
      */
-    public Puerta recuperarInstancia() {
+    public static Puerta recuperarInstancia() {
         if (instancia != null)
             return instancia;
         else
             instancia = new Puerta();
 
         return instancia;
+    }
+
+    /**
+     * Muestra un mensaje en una línea por consola
+     *
+     * @param mensaje Mensaje a mostrar
+     */
+    private void mostrarMensaje(String mensaje) {
+        System.out.println(mensaje);
     }
 }

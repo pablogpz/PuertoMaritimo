@@ -7,30 +7,45 @@
 
 public class Barco implements Runnable {
 
+    private static final int NUM_PETICIONES = 3;            // Número de peticiones a la puerta según el estado del barco
     /**
      * Entero único para cada barco que lo identifica. Es de solo lectura
      */
     private int identificador;
+
     /**
-     * Estado en el que se encuentra el barco. @see ESTADO_BARCO
+     * @see ESTADO_BARCO Estado en el que se encuentra el barco
      */
     private ESTADO_BARCO estado;
 
     /**
      * Constructor parametrizado. Instancia un nuevo barco a partir de un identificador y un estado
      *
-     * @param id     Identificador del barco
-     * @param estado Estado inicial del barco
+     * @param identificador Identificador del barco
+     * @param estado        Estado inicial del barco
      */
-    public Barco(int id, ESTADO_BARCO estado) {
-        // TODO - implement Barco.Barco
+    public Barco(int identificador, ESTADO_BARCO estado) {
+        this.identificador = identificador;
+        this.estado = estado;
     }
 
     /**
-     * //TODO Documentar método run()
+     * // TODO Documentar método run()
      */
+    @Override
     public void run() {
-        // TODO - implement Barco.run
+        Puerta puerta = Puerta.recuperarInstancia();
+
+        switch (estado) {
+            case ENTRADA:
+                for (int i = 0; i < NUM_PETICIONES; i++)
+                    puerta.entrar(this);
+                break;
+            case SALIDA:
+                for (int i = 0; i < NUM_PETICIONES; i++)
+                    puerta.salir(this);
+                break;
+        }
     }
 
     /**
