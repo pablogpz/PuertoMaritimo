@@ -38,12 +38,28 @@ public class Barco implements Runnable {
 
         switch (getEstado()) {                              // Determina la acción del barco adecuada a su estado
             case ENTRADA:
-                for (int i = 0; i < NUM_PETICIONES; i++)
-                    puerta.entrar(this);
+                synchronized (Puerta.recuperarInstancia()) {
+                    for (int i = 0; i < NUM_PETICIONES; i++) {
+                        puerta.entrar(this);
+                        try {
+                            Thread.currentThread().sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 break;
             case SALIDA:
-                for (int i = 0; i < NUM_PETICIONES; i++)
-                    puerta.salir(this);
+                synchronized (Puerta.recuperarInstancia()) {
+                    for (int i = 0; i < NUM_PETICIONES; i++) {
+                        puerta.salir(this);
+                        try {
+                            Thread.currentThread().sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 break;
         }
     }
