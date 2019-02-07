@@ -11,38 +11,42 @@ public class Puerta {
     /**
      * Instancia Singleton de la puerta
      */
-    private Puerta instancia;
+    private Puerta instancia = null;
 
     /**
      * Constructor por defecto. Inicializa la instancia Singleton
      */
-    public Puerta() {
-        // TODO - implement Puerta.Puerta
+    private Puerta() {
+        instancia = new Puerta();
     }
 
     /**
-     * //TODO Documenar método entrar()
+     * // TODO Documenar método entrar()
      *
      * @param barco
      */
     public void entrar(Barco barco) {
-        // TODO - implement Puerta.entrar
+        System.out.println("El barco con ID: " + barco.getIdentificador() + " entra");
     }
 
     /**
-     * //TODO Documentar método salir()
+     * // TODO Documentar método salir()
      *
      * @param barco
      */
     public void salir(Barco barco) {
-        // TODO - implement Puerta.salir
+        System.out.println("El barco con ID: " + barco.getIdentificador() + " sale");
     }
 
     /**
      * @return la instancia Singleton de la clase Puerta
      */
     public Puerta recuperarInstancia() {
-        // TODO - implement Puerta.recuperarInstancia
-        return null;
+        if (instancia != null)
+            return instancia;
+        else
+            instancia = new Puerta();
+
+        return instancia;
     }
 }

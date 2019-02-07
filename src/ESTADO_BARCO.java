@@ -1,5 +1,5 @@
 /**
- * //TODO Documentar clase ESTADO_BARCO
+ * // TODO Documentar clase ESTADO_BARCO
  */
 
 public enum ESTADO_BARCO {
