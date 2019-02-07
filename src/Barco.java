@@ -34,9 +34,9 @@ public class Barco implements Runnable {
      */
     @Override
     public void run() {
-        Puerta puerta = Puerta.recuperarInstancia();
+        Puerta puerta = Puerta.recuperarInstancia();        // Instancia Singleton de la puerta
 
-        switch (estado) {
+        switch (getEstado()) {                              // Determina la acción del barco adecuada a su estado
             case ENTRADA:
                 for (int i = 0; i < NUM_PETICIONES; i++)
                     puerta.entrar(this);

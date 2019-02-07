@@ -17,7 +17,6 @@ public class Puerta {
      * Constructor por defecto. Inicializa la instancia Singleton
      */
     private Puerta() {
-        instancia = new Puerta();
     }
 
     /**
