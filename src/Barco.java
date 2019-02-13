@@ -7,7 +7,6 @@
 
 public class Barco implements Runnable {
 
-    private static final int NUM_PETICIONES = 3;            // Número de peticiones a la puerta según el estado del barco
     /**
      * Entero único para cada barco que lo identifica. Es de solo lectura
      */
@@ -38,27 +37,19 @@ public class Barco implements Runnable {
 
         switch (getEstado()) {                              // Determina la acción del barco adecuada a su estado
             case ENTRADA:
-                synchronized (Puerta.recuperarInstancia()) {
-                    for (int i = 0; i < NUM_PETICIONES; i++) {
-                        puerta.entrar(this);
-                        try {
-                            Thread.currentThread().sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                puerta.entrar(this);
+                try {
+                    Thread.currentThread().sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 break;
             case SALIDA:
-                synchronized (Puerta.recuperarInstancia()) {
-                    for (int i = 0; i < NUM_PETICIONES; i++) {
-                        puerta.salir(this);
-                        try {
-                            Thread.currentThread().sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                puerta.salir(this);
+                try {
+                    Thread.currentThread().sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 break;
         }

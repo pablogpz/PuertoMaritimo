@@ -12,6 +12,7 @@ public class Puerta {
      * Instancia Singleton de la puerta
      */
     private static Puerta instancia = null;
+    private static final int NUM_PETICIONES = 3;            // Número de peticiones a la puerta según el estado del barco
 
     /**
      * Constructor por defecto. Inicializa la instancia Singleton
@@ -24,8 +25,11 @@ public class Puerta {
      *
      * @param barco
      */
-    public void entrar(Barco barco) {
-        mostrarMensaje("El barco con ID: " + barco.getIdentificador() + " entra");
+    public synchronized void entrar(Barco barco) {
+        String mensaje = "El barco con ID: " + barco.getIdentificador() + " entra";
+        for (int i = 0; i < NUM_PETICIONES; i++) {
+            mostrarMensaje(mensaje);
+        }
     }
 
     /**
@@ -33,8 +37,11 @@ public class Puerta {
      *
      * @param barco
      */
-    public void salir(Barco barco) {
-        mostrarMensaje("El barco con ID: " + barco.getIdentificador() + " sale");
+    public synchronized void salir(Barco barco) {
+        String mensaje = "El barco con ID: " + barco.getIdentificador() + " sale";
+        for (int i = 0; i < NUM_PETICIONES; i++) {
+            mostrarMensaje(mensaje);
+        }
     }
 
     /**
@@ -56,5 +63,6 @@ public class Puerta {
      */
     private void mostrarMensaje(String mensaje) {
         System.out.println(mensaje);
+
     }
 }
