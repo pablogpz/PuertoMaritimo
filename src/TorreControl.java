@@ -35,8 +35,6 @@ public class TorreControl {
      * @return Si tiene permiso para entrar
      */
     public synchronized boolean permisoEntrada() {
-        boolean permiso = false;
-
         // Protocolo de entrada
         while (barcosSaliendo != 0) {
             try {
@@ -46,10 +44,8 @@ public class TorreControl {
             }
         }
         // Acción
-        permiso = true;
         barcosEntrando++;
-
-        return permiso;
+        return true;
     }
 
     /**
@@ -58,8 +54,6 @@ public class TorreControl {
      * @return Si tiene permiso para salir
      */
     public synchronized boolean permisoSalida() {
-        boolean permiso = false;
-
         // Protocolo de entrada
         while (barcosEntrando != 0) {
             try {
@@ -69,10 +63,8 @@ public class TorreControl {
             }
         }
         // Acción
-        permiso = true;
         barcosSaliendo++;
-
-        return permiso;
+        return true;
     }
 
     /**

@@ -26,7 +26,7 @@ public class Puerta {
      *
      * @param barco
      */
-    public synchronized void entrar(Barco barco) {
+    public void entrar(Barco barco) {
         String mensaje = "El barco con ID: " + barco.getIdentificador() + " entra";
         for (int i = 0; i < NUM_PETICIONES; i++) {
             mostrarMensaje(mensaje);
@@ -38,7 +38,7 @@ public class Puerta {
      *
      * @param barco
      */
-    public synchronized void salir(Barco barco) {
+    public void salir(Barco barco) {
         String mensaje = "El barco con ID: " + barco.getIdentificador() + " sale";
         for (int i = 0; i < NUM_PETICIONES; i++) {
             mostrarMensaje(mensaje);
