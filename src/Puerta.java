@@ -8,11 +8,12 @@
 
 public class Puerta {
 
+    private static final int NUM_PETICIONES = 3;            // Número de peticiones a la puerta según el estado del barco
+
     /**
      * Instancia Singleton de la puerta
      */
     private static Puerta instancia = null;
-    private static final int NUM_PETICIONES = 3;            // Número de peticiones a la puerta según el estado del barco
 
     /**
      * Constructor por defecto. Inicializa la instancia Singleton

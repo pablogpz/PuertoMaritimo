@@ -132,7 +132,7 @@ public class TorreControl {
     }
 
     /**
-     * @return la instancia Singleton de la clase Puerta
+     * @return Instancia Singleton de la TorreControl
      */
     public static TorreControl recuperarInstancia() {
         if (instancia != null)
