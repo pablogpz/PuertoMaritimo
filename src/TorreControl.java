@@ -1,8 +1,16 @@
 /**
+ * Implementa el partrón de diseño Singleton
  * // TODO Documentar clase TorreControl
+ *
+ * @author Juan Pablo García Plaza Pérez
+ * @author José Ángel Concha Carrasco
  */
-
 public class TorreControl {
+
+    /**
+     * Instancia Singleton de la TorreControl
+     */
+    private static TorreControl instancia = null;
 
     /**
      * Contador de barcos entrando
@@ -17,7 +25,8 @@ public class TorreControl {
      * Constructor por defecto
      */
     public TorreControl() {
-        // TODO - implement TorreControl.TorreControl
+        barcosEntrando = 0;
+        barcosSaliendo = 0;
     }
 
     /**
@@ -25,9 +34,22 @@ public class TorreControl {
      *
      * @return Si tiene permiso para entrar
      */
-    public boolean permisoEntrada() {
-        // TODO - implement TorreControl.permisoEntrada
-        return false;
+    public synchronized boolean permisoEntrada() {
+        boolean permiso = false;
+
+        // Protocolo de entrada
+        while (barcosSaliendo != 0) {
+            try {
+                wait();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // Acción
+        permiso = true;
+        barcosEntrando++;
+
+        return permiso;
     }
 
     /**
@@ -35,23 +57,42 @@ public class TorreControl {
      *
      * @return Si tiene permiso para salir
      */
-    public boolean permisoSalida() {
-        // TODO - implement TorreControl.permisoSalida
-        return false;
+    public synchronized boolean permisoSalida() {
+        boolean permiso = false;
+
+        // Protocolo de entrada
+        while (barcosEntrando != 0) {
+            try {
+                wait();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // Acción
+        permiso = true;
+        barcosSaliendo++;
+
+        return permiso;
     }
 
     /**
      * Protocolo de salida de los BARCOS de ENTRADA
      */
-    public void finEntrada() {
-        // TODO - implement TorreControl.finEntrada
+    public synchronized void finEntrada() {
+        // Acción
+        barcosEntrando--;
+        // Protocolo de salida
+        if (barcosEntrando == 0) notifyAll();
     }
 
     /**
      * Protocolo de salida de los BARCOS de SALIDA
      */
-    public void finSalida() {
-        // TODO - implement TorreControl.finSalida
+    public synchronized void finSalida() {
+        // Acción
+        barcosSaliendo--;
+        // Protocolo de salida
+        if (barcosSaliendo == 0) notifyAll();
     }
 
     /**
@@ -88,6 +129,18 @@ public class TorreControl {
      */
     private void setBarcosSaliendo(int barcosSaliendo) {
         this.barcosSaliendo = barcosSaliendo;
+    }
+
+    /**
+     * @return la instancia Singleton de la clase Puerta
+     */
+    public static TorreControl recuperarInstancia() {
+        if (instancia != null)
+            return instancia;
+        else
+            instancia = new TorreControl();
+
+        return instancia;
     }
 
 }

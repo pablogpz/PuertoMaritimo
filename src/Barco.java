@@ -34,23 +34,46 @@ public class Barco implements Runnable {
     @Override
     public void run() {
         Puerta puerta = Puerta.recuperarInstancia();        // Instancia Singleton de la puerta
+        TorreControl torreControl = TorreControl.recuperarInstancia();      // Instancia Singleton de la torre de control
 
         switch (getEstado()) {                              // Determina la acción del barco adecuada a su estado
             case ENTRADA:
+                // Protocolo de entrada
+                while (!torreControl.permisoEntrada()) {
+                    try {
+                        wait();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                // Acción
                 puerta.entrar(this);
                 try {
                     Thread.currentThread().sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                // Protocolo de salida
+                torreControl.finEntrada();
                 break;
             case SALIDA:
+                // Protocolo de entrada
+                while (!torreControl.permisoSalida()) {
+                    try {
+                        wait();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                // Acción
                 puerta.salir(this);
                 try {
                     Thread.currentThread().sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                // Protocolo de salida
+                torreControl.finSalida();
                 break;
         }
     }
