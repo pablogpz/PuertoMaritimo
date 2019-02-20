@@ -39,7 +39,7 @@ public class Barco implements Runnable {
         switch (getEstado()) {                              // Determina la acción del barco adecuada a su estado
             case ENTRADA:
                 // Protocolo de entrada
-                while (!torreControl.permisoEntrada()) {
+                while (!torreControl.permisoEntrada(this)) {
                     try {
                         wait();
                     } catch (Exception e) {
@@ -54,11 +54,11 @@ public class Barco implements Runnable {
                     e.printStackTrace();
                 }
                 // Protocolo de salida
-                torreControl.finEntrada();
+                torreControl.finEntrada(this);
                 break;
             case SALIDA:
                 // Protocolo de entrada
-                while (!torreControl.permisoSalida()) {
+                while (!torreControl.permisoSalida(this)) {
                     try {
                         wait();
                     } catch (Exception e) {
@@ -73,7 +73,7 @@ public class Barco implements Runnable {
                     e.printStackTrace();
                 }
                 // Protocolo de salida
-                torreControl.finSalida();
+                torreControl.finSalida(this);
                 break;
         }
     }

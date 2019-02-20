@@ -1,3 +1,5 @@
+import java.sql.Timestamp;
+
 /**
  * Implementa el partrón de diseño Singleton
  * // TODO Documentar clase TorreControl
@@ -40,9 +42,11 @@ public class TorreControl {
      *
      * @return Si tiene permiso para entrar
      */
-    public synchronized boolean permisoEntrada() {
+    public synchronized boolean permisoEntrada(Barco barco) {
+        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " pide permiso para entrar.");
+        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] Barcos esperando para salir: " + barcosEsperandoSalir);
         // Protocolo de entrada
-        while (barcosSaliendo != 0 && barcosEsperandoSalir != 0) {
+        while (barcosSaliendo != 0 || barcosEsperandoSalir != 0) {
             try {
                 wait();
             } catch (Exception e) {
@@ -59,12 +63,14 @@ public class TorreControl {
      *
      * @return Si tiene permiso para salir
      */
-    public synchronized boolean permisoSalida() {
+    public synchronized boolean permisoSalida(Barco barco) {
+        System.out.print("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " pide permiso para salir.\n");
         // Protocolo de entrada
         while (barcosEntrando != 0) {
             try {
-                wait();
                 barcosEsperandoSalir++;
+                wait();
+                System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " está esperando para salir.\n");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -78,23 +84,25 @@ public class TorreControl {
     /**
      * Protocolo de salida de los BARCOS de ENTRADA
      */
-    public synchronized void finEntrada() {
+    public synchronized void finEntrada(Barco barco) {
         // Acción
         if (barcosEntrando > 0)
             barcosEntrando--;
         // Protocolo de salida
         if (barcosEntrando == 0) notifyAll();
+        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " ha entrado.\n");
     }
 
     /**
      * Protocolo de salida de los BARCOS de SALIDA
      */
-    public synchronized void finSalida() {
+    public synchronized void finSalida(Barco barco) {
         // Acción
         if (barcosSaliendo > 0)
             barcosSaliendo--;
         // Protocolo de salida
         if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) notifyAll();
+        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " ha salido.\n");
     }
 
     /**
