@@ -22,11 +22,17 @@ public class TorreControl {
     private int barcosSaliendo;
 
     /**
+     * Contador de barcos esperando por salir
+     */
+    private int barcosEsperandoSalir;
+
+    /**
      * Constructor por defecto
      */
     public TorreControl() {
         barcosEntrando = 0;
         barcosSaliendo = 0;
+        barcosEsperandoSalir = 0;
     }
 
     /**
@@ -36,7 +42,7 @@ public class TorreControl {
      */
     public synchronized boolean permisoEntrada() {
         // Protocolo de entrada
-        while (barcosSaliendo != 0) {
+        while (barcosSaliendo != 0 && barcosEsperandoSalir != 0) {
             try {
                 wait();
             } catch (Exception e) {
@@ -58,12 +64,14 @@ public class TorreControl {
         while (barcosEntrando != 0) {
             try {
                 wait();
+                barcosEsperandoSalir++;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         // Acción
         barcosSaliendo++;
+        if (barcosEsperandoSalir > 0) barcosEsperandoSalir--;
         return true;
     }
 
@@ -86,7 +94,7 @@ public class TorreControl {
         if (barcosSaliendo > 0)
             barcosSaliendo--;
         // Protocolo de salida
-        if (barcosSaliendo == 0) notifyAll();
+        if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) notifyAll();
     }
 
     /**
