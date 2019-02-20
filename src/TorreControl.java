@@ -72,7 +72,8 @@ public class TorreControl {
      */
     public synchronized void finEntrada() {
         // Acción
-        barcosEntrando--;
+        if (barcosEntrando > 0)
+            barcosEntrando--;
         // Protocolo de salida
         if (barcosEntrando == 0) notifyAll();
     }
@@ -82,7 +83,8 @@ public class TorreControl {
      */
     public synchronized void finSalida() {
         // Acción
-        barcosSaliendo--;
+        if (barcosSaliendo > 0)
+            barcosSaliendo--;
         // Protocolo de salida
         if (barcosSaliendo == 0) notifyAll();
     }
