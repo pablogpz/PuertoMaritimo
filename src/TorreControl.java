@@ -67,6 +67,7 @@ public class TorreControl {
                 barcosEntrando--;
             // Protocolo de salida
             if (barcosEntrando == 0) esperaSalientes.signal();
+            else esperaEntrantes.signal();
             esperar(1111);
             System.out.println("\t" + System.nanoTime() + " El barco " + barco.getIdentificador() + " entra.");
         } finally {
@@ -117,6 +118,7 @@ public class TorreControl {
                 barcosSaliendo--;
             // Protocolo de salida
             if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) esperaEntrantes.signal();
+            else esperaSalientes.signal();
             System.out.println("\t" + System.nanoTime() + " El barco " + barco.getIdentificador() + " sale.");
             esperar(2222);
         } finally {
