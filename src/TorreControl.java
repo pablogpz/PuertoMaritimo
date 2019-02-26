@@ -53,6 +53,17 @@ public class TorreControl {
     }
 
     /**
+     * Protocolo de salida de los BARCOS de ENTRADA
+     */
+    public synchronized void finEntrada(Barco barco) {
+        // Acción
+        if (barcosEntrando > 0)
+            barcosEntrando--;
+        // Protocolo de salida
+        if (barcosEntrando == 0) esperaSalientes.signal();
+    }
+
+    /**
      * Protocolo de entrada de los BARCOS de SALIDA
      *
      * @return Si tiene permiso para salir
@@ -76,17 +87,6 @@ public class TorreControl {
             monitor.unlock();
         }
         return true;
-    }
-
-    /**
-     * Protocolo de salida de los BARCOS de ENTRADA
-     */
-    public synchronized void finEntrada(Barco barco) {
-        // Acción
-        if (barcosEntrando > 0)
-            barcosEntrando--;
-        // Protocolo de salida
-        if (barcosEntrando == 0) esperaSalientes.signal();
     }
 
     /**
