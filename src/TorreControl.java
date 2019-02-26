@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class TorreControl {
 
-    Lock monitor = new ReentrantLock();
+    Lock monitor = new ReentrantLock(true);
     private static TorreControl instancia = null;       // Instancia Singleton de la TorreControl
     private int barcosEntrando;                         // Contador de barcos entrando
     private int barcosSaliendo;                         // Contador de barcos que están saliendo
@@ -33,8 +33,11 @@ public class TorreControl {
      *
      * @return Si tiene permiso para entrar
      */
-    public synchronized boolean permisoEntrada(Barco barco) {
+    public boolean permisoEntrada(Barco barco) {
         monitor.lock();
+        esperar(21708);
+        System.out.println("\t " + System.nanoTime() + " El barco " + barco.getIdentificador() + " quiere entrar.");
+        esperar(12654);
         // Protocolo de entrada
         try {
             while (barcosSaliendo != 0 || barcosEsperandoSalir != 0) {
@@ -55,12 +58,20 @@ public class TorreControl {
     /**
      * Protocolo de salida de los BARCOS de ENTRADA
      */
-    public synchronized void finEntrada(Barco barco) {
-        // Acción
-        if (barcosEntrando > 0)
-            barcosEntrando--;
-        // Protocolo de salida
-        if (barcosEntrando == 0) esperaSalientes.signal();
+    public void finEntrada(Barco barco) {
+        monitor.lock();
+        esperar(22614);
+        try {
+            // Acción
+            if (barcosEntrando > 0) // Comprobación de errores
+                barcosEntrando--;
+            // Protocolo de salida
+            if (barcosEntrando == 0) esperaSalientes.signal();
+            esperar(1111);
+            System.out.println("\t" + System.nanoTime() + " El barco " + barco.getIdentificador() + " entra.");
+        } finally {
+            monitor.unlock();
+        }
     }
 
     /**
@@ -68,8 +79,11 @@ public class TorreControl {
      *
      * @return Si tiene permiso para salir
      */
-    public synchronized boolean permisoSalida(Barco barco) {
+    public boolean permisoSalida(Barco barco) {
         monitor.lock();
+        esperar(11234);
+        System.out.println("\t " + System.nanoTime() + " El barco " + barco.getIdentificador() + " quiere salir.");
+        esperar(12341);
         // Protocolo de entrada
         try {
             while (barcosEntrando != 0) {
@@ -82,7 +96,9 @@ public class TorreControl {
             }
             // Acción
             barcosSaliendo++;
-            if (barcosEsperandoSalir > 0) barcosEsperandoSalir--;
+            esperaSalientes.signal();   // Si comienzan a salir barcos es posible que haya alguno bloqueado que quiera salir también
+            barcosEsperandoSalir = 0;   // Por tanto, el contador se pondrá a 0 cuando se hayan desbloqueado todos.
+
         } finally {
             monitor.unlock();
         }
@@ -92,12 +108,20 @@ public class TorreControl {
     /**
      * Protocolo de salida de los BARCOS de SALIDA
      */
-    public synchronized void finSalida(Barco barco) {
-        // Acción
-        if (barcosSaliendo > 0)
-            barcosSaliendo--;
-        // Protocolo de salida
-        if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) esperaEntrantes.signal();
+    public void finSalida(Barco barco) {
+        monitor.lock();
+        esperar(213);
+        try {
+            // Acción
+            if (barcosSaliendo > 0)
+                barcosSaliendo--;
+            // Protocolo de salida
+            if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) esperaEntrantes.signal();
+            System.out.println("\t" + System.nanoTime() + " El barco " + barco.getIdentificador() + " sale.");
+            esperar(2222);
+        } finally {
+            monitor.unlock();
+        }
     }
 
     /**
@@ -146,6 +170,14 @@ public class TorreControl {
             instancia = new TorreControl();
 
         return instancia;
+    }
+
+    public static void esperar(int milis) {
+        try {
+            Thread.sleep(milis);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
 }
