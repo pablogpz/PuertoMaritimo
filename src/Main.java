@@ -9,8 +9,8 @@ import java.util.*;
 
 public class Main {
 
-    private static final int NUM_BARCOS_ENTRADA_SIM = 3;    // Número de barcos de entrada creados para la simulación
-    private static final int NUM_BARCOS_SALIDA_SIM = 3;     // Número de barcos de salida creados para la simulación
+    public static final int NUM_BARCOS_ENTRADA_SIM = 3;    // Número de barcos de entrada creados para la simulación
+    public static final int NUM_BARCOS_SALIDA_SIM = 3;     // Número de barcos de salida creados para la simulación
 
     /**
      * Constructor por defecto. Inicia la simulación

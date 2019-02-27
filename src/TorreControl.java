@@ -1,3 +1,6 @@
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+
 /**
  * Implementa el partrón de diseño Singleton
  * // TODO Documentar clase TorreControl
@@ -11,6 +14,10 @@ public class TorreControl {
     private int barcosEntrando;                             // Contador de barcos entrando
     private int barcosSaliendo;                             // Contador de barcos que están saliendo
     private int barcosEsperandoSalir;                       // Contador de barcos esperando por salir
+    private int barcosEsperandoEntrar;                   // Contador de barcos esperando por entrar
+    private Queue<Barco> colaSalida;                                // Cola de barcos de salida.
+    private Queue<Barco> colaEntrada;                               // Cola de barcos de entrada.
+
 
     /**
      * Constructor por defecto
@@ -19,6 +26,9 @@ public class TorreControl {
         barcosEntrando = 0;
         barcosSaliendo = 0;
         barcosEsperandoSalir = 0;
+        barcosEsperandoEntrar = 0;
+        colaSalida = new ArrayBlockingQueue<>(Main.NUM_BARCOS_SALIDA_SIM);      // Tamaño máximo de la cola de salida
+        colaEntrada = new ArrayBlockingQueue<>(Main.NUM_BARCOS_ENTRADA_SIM);    // Tamaño máximo de la cola de entrade
     }
 
     /**
