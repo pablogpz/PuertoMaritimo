@@ -5,27 +5,33 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Implementa el partrón de diseño Singleton
  * // TODO Documentar clase TorreControl
+ * // TODO Agregar cambios al UML
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco
  */
 public class TorreControl {
 
-    Lock monitor = new ReentrantLock(true);
     private static TorreControl instancia = null;       // Instancia Singleton de la TorreControl
     private int barcosEntrando;                         // Contador de barcos entrando
     private int barcosSaliendo;                         // Contador de barcos que están saliendo
     private int barcosEsperandoSalir;                   // Contador de barcos esperando por salir
-    Condition esperaEntrantes = monitor.newCondition();
-    Condition esperaSalientes = monitor.newCondition();
+
+    private Lock monitor;
+    private Condition esperaEntrantes;
+    private Condition esperaSalientes;
 
     /**
      * Constructor por defecto
      */
-    public TorreControl() {
+    private TorreControl() {
         barcosEntrando = 0;
         barcosSaliendo = 0;
         barcosEsperandoSalir = 0;
+
+        monitor = new ReentrantLock(true);
+        esperaEntrantes = monitor.newCondition();
+        esperaSalientes = monitor.newCondition();
     }
 
     /**
@@ -35,9 +41,9 @@ public class TorreControl {
      */
     public boolean permisoEntrada(Barco barco) {
         monitor.lock();
-        esperar(21708);
-        System.out.println("\t " + System.nanoTime() + " El barco " + barco.getIdentificador() + " quiere entrar.");
-        esperar(12654);
+        esperar(500);
+        System.out.println("\t" + timestamp() + " El barco " + barco.getIdentificador() + " quiere entrar.");
+        esperar(500);
         // Protocolo de entrada
         try {
             while (barcosSaliendo != 0 || barcosEsperandoSalir != 0) {
@@ -60,7 +66,7 @@ public class TorreControl {
      */
     public void finEntrada(Barco barco) {
         monitor.lock();
-        esperar(22614);
+        esperar(500);
         try {
             // Acción
             if (barcosEntrando > 0) // Comprobación de errores
@@ -68,8 +74,8 @@ public class TorreControl {
             // Protocolo de salida
             if (barcosEntrando == 0) esperaSalientes.signal();
             else esperaEntrantes.signal();
-            esperar(1111);
-            System.out.println("\t" + System.nanoTime() + " El barco " + barco.getIdentificador() + " entra.");
+            esperar(500);
+            System.out.println("\t" + timestamp() + " El barco " + barco.getIdentificador() + " entra.");
         } finally {
             monitor.unlock();
         }
@@ -82,9 +88,9 @@ public class TorreControl {
      */
     public boolean permisoSalida(Barco barco) {
         monitor.lock();
-        esperar(11234);
-        System.out.println("\t " + System.nanoTime() + " El barco " + barco.getIdentificador() + " quiere salir.");
-        esperar(12341);
+        esperar(500);
+        System.out.println("\t" + timestamp() + " El barco " + barco.getIdentificador() + " quiere salir.");
+        esperar(500);
         // Protocolo de entrada
         try {
             while (barcosEntrando != 0) {
@@ -111,7 +117,7 @@ public class TorreControl {
      */
     public void finSalida(Barco barco) {
         monitor.lock();
-        esperar(213);
+        esperar(500);
         try {
             // Acción
             if (barcosSaliendo > 0)
@@ -119,8 +125,8 @@ public class TorreControl {
             // Protocolo de salida
             if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) esperaEntrantes.signal();
             else esperaSalientes.signal();
-            System.out.println("\t" + System.nanoTime() + " El barco " + barco.getIdentificador() + " sale.");
-            esperar(2222);
+            System.out.println("\t" + timestamp() + " El barco " + barco.getIdentificador() + " sale.");
+            esperar(500);
         } finally {
             monitor.unlock();
         }
@@ -180,6 +186,10 @@ public class TorreControl {
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    private String timestamp() {
+        return Long.toString(System.nanoTime()).substring(10);
     }
 
 }
