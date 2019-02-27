@@ -1,5 +1,3 @@
-import java.sql.Timestamp;
-
 /**
  * Implementa el partrón de diseño Singleton
  * // TODO Documentar clase TorreControl
@@ -9,29 +7,15 @@ import java.sql.Timestamp;
  */
 public class TorreControl {
 
-    /**
-     * Instancia Singleton de la TorreControl
-     */
-    private static TorreControl instancia = null;
-
-    /**
-     * Contador de barcos entrando
-     */
-    private int barcosEntrando;
-    /**
-     * Contador de barcos que están saliendo
-     */
-    private int barcosSaliendo;
-
-    /**
-     * Contador de barcos esperando por salir
-     */
-    private int barcosEsperandoSalir;
+    private static TorreControl instancia = null;           // Instancia Singleton de la TorreControl
+    private int barcosEntrando;                             // Contador de barcos entrando
+    private int barcosSaliendo;                             // Contador de barcos que están saliendo
+    private int barcosEsperandoSalir;                       // Contador de barcos esperando por salir
 
     /**
      * Constructor por defecto
      */
-    public TorreControl() {
+    private TorreControl() {
         barcosEntrando = 0;
         barcosSaliendo = 0;
         barcosEsperandoSalir = 0;
@@ -43,8 +27,8 @@ public class TorreControl {
      * @return Si tiene permiso para entrar
      */
     public synchronized boolean permisoEntrada(Barco barco) {
-        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " pide permiso para entrar.");
-        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] Barcos esperando para salir: " + barcosEsperandoSalir);
+        System.out.println("\t[" + timeStamp() + "] El barco " + barco.getIdentificador() + " pide permiso para entrar.");
+        System.out.println("\t[" + timeStamp() + "] Barcos esperando para salir: " + barcosEsperandoSalir);
         // Protocolo de entrada
         while (barcosSaliendo != 0 || barcosEsperandoSalir != 0) {
             try {
@@ -64,13 +48,13 @@ public class TorreControl {
      * @return Si tiene permiso para salir
      */
     public synchronized boolean permisoSalida(Barco barco) {
-        System.out.print("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " pide permiso para salir.\n");
+        System.out.print("\t[" + timeStamp() + "] El barco " + barco.getIdentificador() + " pide permiso para salir.\n");
         // Protocolo de entrada
         while (barcosEntrando != 0) {
             try {
                 barcosEsperandoSalir++;
                 wait();
-                System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " está esperando para salir.\n");
+                System.out.println("\t[" + timeStamp() + "] El barco " + barco.getIdentificador() + " está esperando para salir.\n");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -90,7 +74,7 @@ public class TorreControl {
             barcosEntrando--;
         // Protocolo de salida
         if (barcosEntrando == 0) notifyAll();
-        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " ha entrado.\n");
+        System.out.println("\t[" + timeStamp() + "] El barco " + barco.getIdentificador() + " ha entrado.\n");
     }
 
     /**
@@ -102,7 +86,7 @@ public class TorreControl {
             barcosSaliendo--;
         // Protocolo de salida
         if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) notifyAll();
-        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " ha salido.\n");
+        System.out.println("\t[" + timeStamp() + "] El barco " + barco.getIdentificador() + " ha salido.\n");
     }
 
     /**
@@ -151,6 +135,28 @@ public class TorreControl {
             instancia = new TorreControl();
 
         return instancia;
+    }
+
+    /**
+     * Devuelve el timeStamp medido en nanosegundos adaptado a la precisión más próxima a los threads.
+     *
+     * @return Cadena numérica que indica el momento temporal de ejecución.
+     */
+    private String timeStamp() {
+        return Long.toString(System.nanoTime()).substring(8);
+    }
+
+    /**
+     * Realiza una pausa en el thread que lo invoca.
+     *
+     * @param milis El número de milisegundos que queremos 'dormir' el thread.
+     */
+    private void esperar(int milis) {
+        try {
+            Thread.sleep(milis);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
