@@ -8,7 +8,7 @@
 
 public class Puerta {
 
-    private static final int NUM_PETICIONES = 3;            // Número de peticiones a la puerta según el estado del barco
+    private static final int NUM_PETICIONES = 1;            // Número de peticiones a la puerta según el estado del barco
 
     /**
      * Instancia Singleton de la puerta
@@ -27,7 +27,7 @@ public class Puerta {
      * @param barco
      */
     public void entrar(Barco barco) {
-        String mensaje = "El barco con ID: " + barco.getIdentificador() + " entra";
+        String mensaje = "[" + System.currentTimeMillis() + "] El barco con ID: " + barco.getIdentificador() + " entra";
         for (int i = 0; i < NUM_PETICIONES; i++) {
             mostrarMensaje(mensaje);
         }
@@ -39,7 +39,7 @@ public class Puerta {
      * @param barco
      */
     public void salir(Barco barco) {
-        String mensaje = "El barco con ID: " + barco.getIdentificador() + " sale";
+        String mensaje = "[" + System.currentTimeMillis() + "] El barco con ID: " + barco.getIdentificador() + " sale";
         for (int i = 0; i < NUM_PETICIONES; i++) {
             mostrarMensaje(mensaje);
         }

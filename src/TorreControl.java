@@ -34,7 +34,7 @@ public class TorreControl {
      *
      * @return Si tiene permiso para entrar
      */
-    public synchronized boolean permisoEntrada() {
+    public synchronized boolean permisoEntrada(Barco barco) {
         // Protocolo de entrada
         while (barcosSaliendo != 0) {
             try {
@@ -45,6 +45,7 @@ public class TorreControl {
         }
         // Acción
         barcosEntrando++;
+        System.out.println("\t" + "[" + System.currentTimeMillis() + "] El barco " + barco.getIdentificador() + " pide permiso para entrar");
         return true;
     }
 
@@ -53,7 +54,7 @@ public class TorreControl {
      *
      * @return Si tiene permiso para salir
      */
-    public synchronized boolean permisoSalida() {
+    public synchronized boolean permisoSalida(Barco barco) {
         // Protocolo de entrada
         while (barcosEntrando != 0) {
             try {
@@ -64,13 +65,14 @@ public class TorreControl {
         }
         // Acción
         barcosSaliendo++;
+        System.out.println("\t" + "[" + System.currentTimeMillis() + "] El barco " + barco.getIdentificador() + " pide permiso para salir");
         return true;
     }
 
     /**
      * Protocolo de salida de los BARCOS de ENTRADA
      */
-    public synchronized void finEntrada() {
+    public synchronized void finEntrada(Barco barco) {
         // Acción
         if (barcosEntrando > 0)
             barcosEntrando--;
@@ -81,7 +83,7 @@ public class TorreControl {
     /**
      * Protocolo de salida de los BARCOS de SALIDA
      */
-    public synchronized void finSalida() {
+    public synchronized void finSalida(Barco barco) {
         // Acción
         if (barcosSaliendo > 0)
             barcosSaliendo--;
@@ -112,7 +114,7 @@ public class TorreControl {
      *
      * @param barcosEntrando Nuevo número de barcos entrando
      */
-    private void setBarcosEntrando(int barcosEntrando) {
+    private synchronized void setBarcosEntrando(int barcosEntrando) {
         this.barcosEntrando = barcosEntrando;
     }
 
@@ -121,7 +123,7 @@ public class TorreControl {
      *
      * @param barcosSaliendo Nuevo número de barcos saliendo
      */
-    private void setBarcosSaliendo(int barcosSaliendo) {
+    private synchronized void setBarcosSaliendo(int barcosSaliendo) {
         this.barcosSaliendo = barcosSaliendo;
     }
 
