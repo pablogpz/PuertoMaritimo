@@ -1,5 +1,3 @@
-import java.sql.Timestamp;
-
 /**
  * Implementa el partrón de diseño Singleton
  * // TODO Documentar clase TorreControl
@@ -43,8 +41,8 @@ public class TorreControl {
      * @return Si tiene permiso para entrar
      */
     public synchronized boolean permisoEntrada(Barco barco) {
-        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " pide permiso para entrar.");
-        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] Barcos esperando para salir: " + barcosEsperandoSalir);
+//        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " pide permiso para entrar.");
+//        System.out.println("\t\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] Barcos esperando para salir: " + barcosEsperandoSalir);
         // Protocolo de entrada
         while (barcosSaliendo != 0 || barcosEsperandoSalir != 0) {
             try {
@@ -64,13 +62,13 @@ public class TorreControl {
      * @return Si tiene permiso para salir
      */
     public synchronized boolean permisoSalida(Barco barco) {
-        System.out.print("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " pide permiso para salir.\n");
+//        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " pide permiso para salir.");
         // Protocolo de entrada
         while (barcosEntrando != 0) {
             try {
                 barcosEsperandoSalir++;
+//                System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " está esperando para salir.");
                 wait();
-                System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " está esperando para salir.\n");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -90,7 +88,7 @@ public class TorreControl {
             barcosEntrando--;
         // Protocolo de salida
         if (barcosEntrando == 0) notifyAll();
-        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " ha entrado.\n");
+//        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " ha entrado.");
     }
 
     /**
@@ -102,7 +100,7 @@ public class TorreControl {
             barcosSaliendo--;
         // Protocolo de salida
         if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) notifyAll();
-        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " ha salido.\n");
+//        System.out.println("\t[" + new Timestamp(System.currentTimeMillis()).getNanos() + "] El barco " + barco.getIdentificador() + " ha salido.");
     }
 
     /**
@@ -128,7 +126,7 @@ public class TorreControl {
      *
      * @param barcosEntrando Nuevo número de barcos entrando
      */
-    private void setBarcosEntrando(int barcosEntrando) {
+    private synchronized void setBarcosEntrando(int barcosEntrando) {
         this.barcosEntrando = barcosEntrando;
     }
 
@@ -137,7 +135,7 @@ public class TorreControl {
      *
      * @param barcosSaliendo Nuevo número de barcos saliendo
      */
-    private void setBarcosSaliendo(int barcosSaliendo) {
+    private synchronized void setBarcosSaliendo(int barcosSaliendo) {
         this.barcosSaliendo = barcosSaliendo;
     }
 

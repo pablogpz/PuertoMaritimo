@@ -8,7 +8,7 @@
 
 public class Puerta {
 
-    private static final int NUM_PETICIONES = 3;            // Número de peticiones a la puerta según el estado del barco
+    private static final int NUM_PETICIONES = 1;            // Número de peticiones a la puerta según el estado del barco
 
     /**
      * Instancia Singleton de la puerta
@@ -64,6 +64,5 @@ public class Puerta {
      */
     private void mostrarMensaje(String mensaje) {
         System.out.println(mensaje);
-
     }
 }
