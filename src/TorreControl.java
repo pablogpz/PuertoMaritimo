@@ -24,7 +24,6 @@ public class TorreControl {
      * Contador de barcos que están saliendo
      */
     private int barcosSaliendo;
-
     /**
      * Contador de barcos esperando por salir
      */
@@ -52,26 +51,25 @@ public class TorreControl {
      *
      * @return Si tiene permiso para entrar
      */
-    public boolean permisoEntrada(Barco barco) {
+    public void permisoEntrada(Barco barco) {
         monitor.lock();
         // Protocolo de entrada
-        imprimirConTimestamp(" El barco " + barco.getIdentificador() + " pide permiso para entrar");
+        imprimirConTimestamp("El barco " + barco.getIdentificador() + " pide permiso para entrar");
         try {
             while (barcosSaliendo > 0 || barcosEsperandoSalir > 0) {
                 try {
-                    imprimirConTimestamp(" El barco " + barco.getIdentificador() + " bloqueado para entrar");
+                    imprimirConTimestamp("El barco " + barco.getIdentificador() + " bloqueado para entrar");
                     esperaEntrantes.await();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
             // Acción
-            imprimirConTimestamp(" El barco " + barco.getIdentificador() + " obtiene el permiso para entrar");
+            imprimirConTimestamp("El barco " + barco.getIdentificador() + " obtiene el permiso para entrar");
             barcosEntrando++;
         } finally {
             monitor.unlock();
         }
-        return true;
     }
 
     /**
@@ -79,14 +77,14 @@ public class TorreControl {
      *
      * @return Si tiene permiso para salir
      */
-    public boolean permisoSalida(Barco barco) {
+    public void permisoSalida(Barco barco) {
         monitor.lock();
-        // Protocolo de entrada
-        imprimirConTimestamp(" El barco " + barco.getIdentificador() + " pide permiso para salir");
         try {
+            // Protocolo de entrada
+            imprimirConTimestamp("El barco " + barco.getIdentificador() + " pide permiso para salir");
             while (barcosEntrando > 0) {
                 try {
-                    imprimirConTimestamp(" El barco " + barco.getIdentificador() + " bloqueado para salir");
+                    imprimirConTimestamp("El barco " + barco.getIdentificador() + " bloqueado para salir");
                     barcosEsperandoSalir++;
                     esperaSalientes.await();
                 } catch (Exception e) {
@@ -94,14 +92,14 @@ public class TorreControl {
                 }
             }
             // Acción
-            imprimirConTimestamp(" El barco " + barco.getIdentificador() + " obtiene permiso para salir");
+            imprimirConTimestamp("El barco " + barco.getIdentificador() + " obtiene permiso para salir");
             barcosSaliendo++;
+
             esperaSalientes.signal();   // Si comienzan a salir barcos es posible que haya alguno bloqueado que quiera salir también
             barcosEsperandoSalir = 0;   // Por tanto, el contador se pondrá a 0 cuando se hayan desbloqueado todos.
         } finally {
             monitor.unlock();
         }
-        return true;
     }
 
     /**
@@ -111,11 +109,11 @@ public class TorreControl {
         monitor.lock();
         try {
             // Acción
-            imprimirConTimestamp(" El barco " + barco.getIdentificador() + " finalmente ha entrado");
+            imprimirConTimestamp("El barco " + barco.getIdentificador() + " finalmente ha entrado");
             barcosEntrando--;
             // Protocolo de salida
             if (barcosEntrando == 0) {
-                imprimirConTimestamp(" Entran todos los barcos de entrada");
+                imprimirConTimestamp("Entran todos los barcos de entrada");
                 esperaSalientes.signal();
             } else {
                 esperaEntrantes.signal();
@@ -132,11 +130,11 @@ public class TorreControl {
         monitor.lock();
         try {
             // Acción
-            imprimirConTimestamp(" El barco " + barco.getIdentificador() + " finalmente ha salido");
+            imprimirConTimestamp("El barco " + barco.getIdentificador() + " finalmente ha salido");
             barcosSaliendo--;
             // Protocolo de salida
             if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) {
-                imprimirConTimestamp(" Salen todos los barcos de salida");
+                imprimirConTimestamp("Salen todos los barcos de salida");
                 esperaEntrantes.signal();
             } else {
                 esperaSalientes.signal();
