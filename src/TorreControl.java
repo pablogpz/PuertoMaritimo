@@ -115,8 +115,6 @@ public class TorreControl {
             if (barcosEntrando == 0) {
                 imprimirConTimestamp("Entran todos los barcos de entrada");
                 esperaSalientes.signal();
-            } else {
-                esperaEntrantes.signal();
             }
         } finally {
             monitor.unlock();
@@ -136,8 +134,6 @@ public class TorreControl {
             if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) {
                 imprimirConTimestamp("Salen todos los barcos de salida");
                 esperaEntrantes.signal();
-            } else {
-                esperaSalientes.signal();
             }
         } finally {
             monitor.unlock();
