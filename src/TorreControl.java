@@ -42,9 +42,8 @@ public class TorreControl {
      */
     public synchronized boolean permisoEntrada(Barco barco) {
         // Protocolo de entrada
-        while (barcosSaliendo != 0 || barcosEsperandoSalir != 0) {
         imprimirConTimestamp(" El barco " + barco.getIdentificador() + " pide permiso para entrar");
-        while (barcosSaliendo > 0) {
+        while (barcosSaliendo > 0 || barcosEsperandoSalir > 0) {
             try {
                 imprimirConTimestamp(" El barco " + barco.getIdentificador() + " bloqueado para entrar");
                 wait();
@@ -68,8 +67,8 @@ public class TorreControl {
         imprimirConTimestamp(" El barco " + barco.getIdentificador() + " pide permiso para salir");
         while (barcosEntrando > 0) {
             try {
-                barcosEsperandoSalir++;
                 imprimirConTimestamp(" El barco " + barco.getIdentificador() + " bloqueado para salir");
+                barcosEsperandoSalir++;
                 wait();
             } catch (Exception e) {
                 e.printStackTrace();
