@@ -48,6 +48,7 @@ public class Barco implements Runnable {
             case SALIDA:
                 // Protocolo de entrada
                 torreControl.permisoSalida(this);
+                // Acción
                 puerta.salir(this);
                 // Protocolo de salida
                 torreControl.finSalida(this);
