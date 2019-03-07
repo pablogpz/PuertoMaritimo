@@ -51,20 +51,18 @@ public class TorreControl {
      */
     public void permisoEntrada(Barco barco) {
         monitor.lock();
-        // Protocolo de entrada
-        imprimirConTimestamp("El barco " + barco.getIdentificador() + " pide permiso para entrar");
         try {
+            // Protocolo de entrada
+            imprimirConTimestamp("El barco " + barco.getIdentificador() + " pide permiso para entrar");
             while (barcosSaliendo > 0 || barcosEsperandoSalir > 0) {
-                try {
-                    imprimirConTimestamp("El barco " + barco.getIdentificador() + " bloqueado para entrar");
-                    esperaEntrantes.await();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                imprimirConTimestamp("El barco " + barco.getIdentificador() + " bloqueado para entrar");
+                esperaEntrantes.await();
             }
             // Acción
             imprimirConTimestamp("El barco " + barco.getIdentificador() + " obtiene el permiso para entrar");
             barcosEntrando++;
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             monitor.unlock();
         }
@@ -79,13 +77,9 @@ public class TorreControl {
             // Protocolo de entrada
             imprimirConTimestamp("El barco " + barco.getIdentificador() + " pide permiso para salir");
             while (barcosEntrando > 0) {
-                try {
-                    imprimirConTimestamp("El barco " + barco.getIdentificador() + " bloqueado para salir");
-                    barcosEsperandoSalir++;
-                    esperaSalientes.await();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                imprimirConTimestamp("El barco " + barco.getIdentificador() + " bloqueado para salir");
+                barcosEsperandoSalir++;
+                esperaSalientes.await();
             }
             // Acción
             imprimirConTimestamp("El barco " + barco.getIdentificador() + " obtiene permiso para salir");
@@ -93,6 +87,8 @@ public class TorreControl {
 
             esperaSalientes.signal();   // Si comienzan a salir barcos es posible que haya alguno bloqueado que quiera salir también
             barcosEsperandoSalir = 0;   // Por tanto, el contador se pondrá a 0 cuando se hayan desbloqueado todos.
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             monitor.unlock();
         }
