@@ -48,8 +48,6 @@ public class TorreControl {
 
     /**
      * Protocolo de entrada de los BARCOS de ENTRADA
-     *
-     * @return Si tiene permiso para entrar
      */
     public void permisoEntrada(Barco barco) {
         monitor.lock();
@@ -74,8 +72,6 @@ public class TorreControl {
 
     /**
      * Protocolo de entrada de los BARCOS de SALIDA
-     *
-     * @return Si tiene permiso para salir
      */
     public void permisoSalida(Barco barco) {
         monitor.lock();
