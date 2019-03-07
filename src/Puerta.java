@@ -27,7 +27,7 @@ public class Puerta {
      * @param barco
      */
     public void entrar(Barco barco) {
-        String mensaje = "El barco con ID: " + barco.getIdentificador() + " entra";
+        String mensaje = "[" + System.currentTimeMillis() + "] El barco con ID: " + barco.getIdentificador() + " entra";
         for (int i = 0; i < NUM_PETICIONES; i++) {
             mostrarMensaje(mensaje);
         }
@@ -39,7 +39,7 @@ public class Puerta {
      * @param barco
      */
     public void salir(Barco barco) {
-        String mensaje = "El barco con ID: " + barco.getIdentificador() + " sale";
+        String mensaje = "[" + System.currentTimeMillis() + "] El barco con ID: " + barco.getIdentificador() + " sale";
         for (int i = 0; i < NUM_PETICIONES; i++) {
             mostrarMensaje(mensaje);
         }
@@ -48,7 +48,7 @@ public class Puerta {
     /**
      * @return la instancia Singleton de la clase Puerta
      */
-    public static Puerta recuperarInstancia() {
+    public synchronized static Puerta recuperarInstancia() {
         if (instancia != null)
             return instancia;
         else
@@ -64,6 +64,5 @@ public class Puerta {
      */
     private void mostrarMensaje(String mensaje) {
         System.out.println(mensaje);
-
     }
 }
