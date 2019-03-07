@@ -36,16 +36,18 @@ public class TorreControl {
      */
     public synchronized boolean permisoEntrada(Barco barco) {
         // Protocolo de entrada
-        while (barcosSaliendo != 0) {
+        imprimirConTimestamp(" El barco " + barco.getIdentificador() + " pide permiso para entrar");
+        while (barcosSaliendo > 0) {
             try {
+                imprimirConTimestamp(" El barco " + barco.getIdentificador() + " bloqueado para entrar");
                 wait();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         // Acción
+        imprimirConTimestamp(" El barco " + barco.getIdentificador() + " obtiene el permiso para entrar");
         barcosEntrando++;
-        System.out.println("\t" + "[" + System.currentTimeMillis() + "] El barco " + barco.getIdentificador() + " pide permiso para entrar");
         return true;
     }
 
@@ -56,16 +58,18 @@ public class TorreControl {
      */
     public synchronized boolean permisoSalida(Barco barco) {
         // Protocolo de entrada
-        while (barcosEntrando != 0) {
+        imprimirConTimestamp(" El barco " + barco.getIdentificador() + " pide permiso para salir");
+        while (barcosEntrando > 0) {
             try {
+                imprimirConTimestamp(" El barco " + barco.getIdentificador() + " bloqueado para salir");
                 wait();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         // Acción
+        imprimirConTimestamp(" El barco " + barco.getIdentificador() + " obtiene permiso para salir");
         barcosSaliendo++;
-        System.out.println("\t" + "[" + System.currentTimeMillis() + "] El barco " + barco.getIdentificador() + " pide permiso para salir");
         return true;
     }
 
@@ -74,10 +78,13 @@ public class TorreControl {
      */
     public synchronized void finEntrada(Barco barco) {
         // Acción
-        if (barcosEntrando > 0)
-            barcosEntrando--;
+        imprimirConTimestamp(" El barco " + barco.getIdentificador() + " finalmente ha entrado");
+        barcosEntrando--;
         // Protocolo de salida
-        if (barcosEntrando == 0) notifyAll();
+        if (barcosEntrando == 0) {
+            imprimirConTimestamp(" Entran todos los barcos de entrada");
+            notifyAll();
+        }
     }
 
     /**
@@ -85,10 +92,13 @@ public class TorreControl {
      */
     public synchronized void finSalida(Barco barco) {
         // Acción
-        if (barcosSaliendo > 0)
-            barcosSaliendo--;
+        imprimirConTimestamp(" El barco " + barco.getIdentificador() + " finalmente ha salido");
+        barcosSaliendo--;
         // Protocolo de salida
-        if (barcosSaliendo == 0) notifyAll();
+        if (barcosSaliendo == 0) {
+            imprimirConTimestamp(" Salen todos los barcos de salida");
+            notifyAll();
+        }
     }
 
     /**
@@ -130,13 +140,22 @@ public class TorreControl {
     /**
      * @return Instancia Singleton de la TorreControl
      */
-    public static TorreControl recuperarInstancia() {
+    public synchronized static TorreControl recuperarInstancia() {
         if (instancia != null)
             return instancia;
         else
             instancia = new TorreControl();
 
         return instancia;
+    }
+
+    /**
+     * Imprime un mensaje con marca de tiempo por consola en una línea
+     *
+     * @param mensaje Mensaje a imprimir
+     */
+    private void imprimirConTimestamp(String mensaje) {
+        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje);
     }
 
 }
