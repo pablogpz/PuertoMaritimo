@@ -61,6 +61,8 @@ public class TorreControl {
             // Acción
             imprimirConTimestamp("El barco " + barco.getIdentificador() + " obtiene el permiso para entrar");
             barcosEntrando++;
+
+            esperaEntrantes.signal();   // Si comienzan a entrar barcos es posible que haya alguno bloqueado que quiera entrar también
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -86,7 +88,7 @@ public class TorreControl {
             barcosSaliendo++;
 
             esperaSalientes.signal();   // Si comienzan a salir barcos es posible que haya alguno bloqueado que quiera salir también
-            barcosEsperandoSalir = 0;   // Por tanto, el contador se pondrá a 0 cuando se hayan desbloqueado todos.
+            barcosEsperandoSalir--;     // Por tanto, el contador se pondrá a 0 cuando se hayan desbloqueado todos
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -123,7 +125,7 @@ public class TorreControl {
             imprimirConTimestamp("El barco " + barco.getIdentificador() + " finalmente ha salido");
             barcosSaliendo--;
             // Protocolo de salida
-            if (barcosSaliendo == 0 && barcosEsperandoSalir == 0) {
+            if (barcosSaliendo == 0) {
                 imprimirConTimestamp("Salen todos los barcos de salida");
                 esperaEntrantes.signal();
             }
