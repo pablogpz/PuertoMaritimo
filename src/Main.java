@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Clase principal del proyecto
@@ -23,7 +26,7 @@ public class Main {
      * Realiza la simulación del proyecto
      */
     private void simulacion() {
-        Set<Barco> barcos = new HashSet<>();                // Colección de barcos simulados
+        List<Barco> barcos = new ArrayList<>();             // Colección de barcos simulados
         int id = 1;                                         // Identificador asignado a cada barco
 
         // Creación de barcos
@@ -39,6 +42,7 @@ public class Main {
 
         // Ejecución de la simulación
 
+        Collections.shuffle(barcos);                        // Distribuye el orden de los barcos
         Iterator<Barco> barcoIterator = barcos.iterator();
         List<Thread> hilos = new ArrayList<>();             // Colección de hilos instanciados
         while (barcoIterator.hasNext()) {
