@@ -8,7 +8,7 @@
 public class Grua implements Runnable {
 
     private int identificador;          // Identificador de la Grúa
-    private TIPO_GRUA tipo;             // Tipo de la grúa (dependiente de los cargamentos que vaya a coger)
+    private TIPO_CARGAMENTO tipo;             // Tipo de la grúa (dependiente de los cargamentos que vaya a coger)
 
     /**
      * Constructor parametrizado. Instancia una nueva grua a partir de un identificador y un tipo
@@ -16,7 +16,7 @@ public class Grua implements Runnable {
      * @param identificador Identificador de la grua
      * @param tipo          Tipo de la grua
      */
-    public Grua(int identificador, TIPO_GRUA tipo) {
+    public Grua(int identificador, TIPO_CARGAMENTO tipo) {
         this.identificador = identificador;
         this.tipo = tipo;
     }
@@ -43,7 +43,7 @@ public class Grua implements Runnable {
      *
      * @return Tipo actual de la grúa
      */
-    public TIPO_GRUA getTipo() {
+    public TIPO_CARGAMENTO getTipo() {
         return tipo;
     }
 
@@ -61,7 +61,7 @@ public class Grua implements Runnable {
      *
      * @param tipo Nuevo tipo de la grúa
      */
-    public void setTipo(TIPO_GRUA tipo) {
+    public void setTipo(TIPO_CARGAMENTO tipo) {
         this.tipo = tipo;
     }
 }

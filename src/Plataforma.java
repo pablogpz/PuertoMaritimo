@@ -31,7 +31,15 @@ public class Plataforma {
         esperaMercante = monitor.newCondition();
 
     }
-    
+
+    public void poner(Barco barco, TIPO_CARGAMENTO tipoCargamento){
+
+    }
+
+    public void coger(Grua grua){
+
+    }
+
     /**
      * @return Instancia Singleton de la Plataforma
      */
