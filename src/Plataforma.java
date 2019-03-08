@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -12,6 +13,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Plataforma {
 
     private static Plataforma instancia = null;   // Instancia Singleton de la Plataforma
+
+    private static final int CAPACIDAD = 1;     // Número de cargamentos simultáneos en la Plataforma
+
+    private ArrayList<TIPO_CARGAMENTO> almacenados; // Colección de cargamentos almacenados en la Plataforma
 
     private Lock monitor;
     private Condition esperaAzucar;             // Variable de espera para las grúas de azúcar
@@ -32,11 +37,39 @@ public class Plataforma {
 
     }
 
-    public void poner(Barco barco, TIPO_CARGAMENTO tipoCargamento){
-
+    /**
+     * Deposita un cargamento siempre que la capacidad de la plataforma lo permita y se lo notifica a la grúa correspondiente.
+     *
+     * @param barco      Barco mercante
+     * @param cargamento Cargamento que deposita en la plataforma
+     */
+    public void poner(BarcoMercante barco, TIPO_CARGAMENTO cargamento) {
+        monitor.lock();
+        try {
+            // Permiso de entrada
+            while (almacenados.size() > (CAPACIDAD - 1)) {
+                esperaMercante.await();
+            }
+            // Acción
+            TIPO_CARGAMENTO nuevoCargamento = barco.obtenerCargamentoAleatorio();
+            almacenados.add(nuevoCargamento);
+            // Permiso de salida: Desbloquea únicamente a la grúa bloqueada que corresponda con el cargamento depositado
+            switch (nuevoCargamento) {
+                case AZUCAR:
+                    esperaAzucar.signal();
+                case HARINA:
+                    esperaHarina.signal();
+                case SAL:
+                    esperaSal.signal();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            monitor.unlock();
+        }
     }
 
-    public void coger(Grua grua){
+    public void coger(Grua grua) {
 
     }
 
