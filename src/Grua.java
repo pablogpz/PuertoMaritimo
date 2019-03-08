@@ -7,8 +7,8 @@
 
 public class Grua implements Runnable {
 
-    private int identificador;
-    private TIPO_GRUA tipo;
+    private int identificador;          // Identificador de la Grúa
+    private TIPO_GRUA tipo;             // Tipo de la grúa (dependiente de los cargamentos que vaya a coger)
 
     /**
      * Constructor parametrizado. Instancia una nueva grua a partir de un identificador y un tipo
