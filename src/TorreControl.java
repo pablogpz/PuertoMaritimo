@@ -11,23 +11,10 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class TorreControl {
 
-    /**
-     * Instancia Singleton de la TorreControl
-     */
-    private static TorreControl instancia = null;
-
-    /**
-     * Contador de barcos entrando
-     */
-    private int barcosEntrando;
-    /**
-     * Contador de barcos que están saliendo
-     */
-    private int barcosSaliendo;
-    /**
-     * Contador de barcos esperando por salir
-     */
-    private int barcosEsperandoSalir;
+    private static TorreControl instancia = null;   // Instancia Singleton de la TorreControl
+    private int barcosEntrando;                     // Contador de barcos entrando
+    private int barcosSaliendo;                     // Contador de barcos que están saliendo
+    private int barcosEsperandoSalir;               // Contador de barcos esperando por salir
 
     private Lock monitor;
     private Condition esperaEntrantes;
