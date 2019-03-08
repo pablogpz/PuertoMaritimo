@@ -40,6 +40,10 @@ public class Main {
             id++;
         }
 
+        // Creación e incorporación de un barco mercante. Llevará el identificador 0 para distinguirlo.
+        Barco mercante = new BarcoMercante(0, ESTADO_BARCO.ENTRADA, 12, 20, 5);
+        barcos.add(mercante);
+
         // Ejecución de la simulación
 
         Collections.shuffle(barcos);                        // Distribuye el orden de los barcos

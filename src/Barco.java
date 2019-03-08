@@ -35,6 +35,7 @@ public class Barco implements Runnable {
     public void run() {
         Puerta puerta = Puerta.recuperarInstancia();        // Instancia Singleton de la puerta
         TorreControl torreControl = TorreControl.recuperarInstancia();  // Instancia Singleton de la torre de control
+        Plataforma plataforma = Plataforma.recuperarInstancia();    // Instancia Singleton de la plataforma
 
         switch (getEstado()) {                              // Determina la acción del barco adecuada a su estado
             case ENTRADA:
@@ -44,6 +45,8 @@ public class Barco implements Runnable {
                 puerta.entrar(this);
                 // Protocolo de salida
                 torreControl.finEntrada(this);
+                // Si el barco que ha entrado es mercante, se dirigirá a la plataforma
+
                 break;
             case SALIDA:
                 // Protocolo de entrada
