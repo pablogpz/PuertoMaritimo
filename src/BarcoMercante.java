@@ -132,4 +132,13 @@ public class BarcoMercante extends Barco {
     public int getCargamentosRestantes() {
         return depositoAzucar + depositoHarina + depositoSal;
     }
+
+    /**
+     * Imprime un mensaje con marca de tiempo por consola en una línea
+     *
+     * @param mensaje Mensaje a imprimir
+     */
+    private void imprimirConTimestamp(String mensaje) {
+        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje);
+    }
 }

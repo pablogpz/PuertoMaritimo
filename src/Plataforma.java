@@ -48,23 +48,29 @@ public class Plataforma {
         try {
             // Protocolo de entrada
             while (almacenados.size() > (CAPACIDAD - 1)) {
+                imprimirConTimestamp("\t El barco con id: " + barco.getIdentificador() + " está bloqueado por la plataforma.");
                 esperaMercante.await();
             }
             // Acción
             TIPO_CARGAMENTO nuevoCargamento = barco.obtenerCargamentoAleatorio();
             almacenados.add(nuevoCargamento);
+            imprimirConTimestamp("\t El barco con id: " + barco.getIdentificador() + " añade un cargamento" + nuevoCargamento.toString() + "a la plataforma.");
             // Protocolo de salida: Desbloquea únicamente a la grúa bloqueada que corresponda con el cargamento depositado
             switch (nuevoCargamento) {
                 case AZUCAR:
                     esperaAzucar.signal();
+                    imprimirConTimestamp("\t Se ha desbloqueado G-azúcar.");
                     break;
                 case HARINA:
                     esperaHarina.signal();
+                    imprimirConTimestamp("\t Se ha desbloqueado G-harina.");
                     break;
                 case SAL:
                     esperaSal.signal();
+                    imprimirConTimestamp("\t Se ha desbloqueado G-sal.");
                     break;
             }
+            imprimirConTimestamp("\t El barco con id: " + barco.getIdentificador() + " finalmente ha añadido un cargamento a la plataforma.");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -77,6 +83,7 @@ public class Plataforma {
         try {
             // Protocolo de entrada: Se bloquea si no hay ningun cargamento en la plataforma o el cargamento no coincide con la grua
             while (almacenados.size() == 0 || (almacenados.get(0) != grua.getTipo())) {
+                imprimirConTimestamp("\t La grúa con id: " + grua.getIdentificador() + " está bloqueada.");
                 switch (grua.getTipo()) {
                     case AZUCAR:
                         esperaAzucar.await();
@@ -91,8 +98,10 @@ public class Plataforma {
             }
             // Acción: consiste en quitar el cargamento de la plataforma
             almacenados.remove(0);
+            imprimirConTimestamp("\t La grúa con id: " + grua.getIdentificador() + " vacía la plataforma");
             // Protocolo de salida: consiste en notificárselo al barco mercante por si puediese estar bloqueado
             esperaMercante.signal();
+            imprimirConTimestamp("\t La grúa con id: " + grua.getIdentificador() + " finalmente ha vaciado la plataforma");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -112,5 +121,12 @@ public class Plataforma {
         return instancia;
     }
 
-
+    /**
+     * Imprime un mensaje con marca de tiempo por consola en una línea
+     *
+     * @param mensaje Mensaje a imprimir
+     */
+    private void imprimirConTimestamp(String mensaje) {
+        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje);
+    }
 }
