@@ -26,7 +26,8 @@ public class Grua implements Runnable {
      */
     @Override
     public void run() {
-
+        Plataforma plataforma = Plataforma.recuperarInstancia();    // Instancia Singleton de la plataforma
+        plataforma.coger(this);
     }
 
     /**

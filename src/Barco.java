@@ -46,7 +46,9 @@ public class Barco implements Runnable {
                 // Protocolo de salida
                 torreControl.finEntrada(this);
                 // Si el barco que ha entrado es mercante, se dirigirá a la plataforma
-
+                if (this instanceof BarcoMercante) {
+                    plataforma.poner((BarcoMercante) this, ((BarcoMercante) this).obtenerCargamentoAleatorio());
+                }
                 break;
             case SALIDA:
                 // Protocolo de entrada
