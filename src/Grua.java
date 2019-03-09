@@ -27,7 +27,10 @@ public class Grua implements Runnable {
     @Override
     public void run() {
         Plataforma plataforma = Plataforma.recuperarInstancia();    // Instancia Singleton de la plataforma
-        plataforma.coger(this);
+        // Las gruas deberán estar operativas mientras haya un barco descargando o haya un cargamento en la plataforma
+        while (plataforma.getActivo() || plataforma.getAlmacenado() != null) {
+            plataforma.coger(this);
+        }
     }
 
     /**

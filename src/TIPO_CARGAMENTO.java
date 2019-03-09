@@ -4,5 +4,5 @@
 public enum TIPO_CARGAMENTO {
     AZUCAR,
     HARINA,
-    SAL
+    SAL,
 }

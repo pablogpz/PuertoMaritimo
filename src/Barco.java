@@ -47,7 +47,12 @@ public class Barco implements Runnable {
                 torreControl.finEntrada(this);
                 // Si el barco que ha entrado es mercante, se dirigirá a la plataforma
                 if (this instanceof BarcoMercante) {
-                    plataforma.poner((BarcoMercante) this, ((BarcoMercante) this).obtenerCargamentoAleatorio());
+                    // Mientras tenga cargamentos intentará soltarlos
+                    while (((BarcoMercante) this).getCargamentosRestantes() > 0) {
+                        plataforma.poner((BarcoMercante) this, ((BarcoMercante) this).obtenerCargamentoAleatorio());
+                    }
+                    // Ya no hay más cargamentos y abandona la zona de descarga
+                    plataforma.setActivo(false);
                 }
                 break;
             case SALIDA:
@@ -87,4 +92,14 @@ public class Barco implements Runnable {
     public void setEstado(ESTADO_BARCO estado) {
         this.estado = estado;
     }
+
+    /**
+     * Imprime un mensaje con marca de tiempo por consola en una línea
+     *
+     * @param mensaje Mensaje a imprimir
+     */
+    private void imprimirConTimestamp(String mensaje) {
+        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje);
+    }
+
 }

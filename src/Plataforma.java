@@ -1,11 +1,10 @@
-import java.util.ArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Implementa el patrón de diseño Singleton
- * // TODO Documentar clase TorreControl
+ * // TODO Documentar clase Plataforma
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco
@@ -14,9 +13,9 @@ public class Plataforma {
 
     private static Plataforma instancia = null;   // Instancia Singleton de la Plataforma
 
-    private static final int CAPACIDAD = 1;     // Número de cargamentos simultáneos en la Plataforma
+    private TIPO_CARGAMENTO almacenado; // Cargamento almacenado en la Plataforma
 
-    private ArrayList<TIPO_CARGAMENTO> almacenados; // Colección de cargamentos almacenados en la Plataforma
+    private boolean activo = true;              // Indica si la plataforma debe seguir funcionando
 
     private Lock monitor;
     private Condition esperaAzucar;             // Variable de espera para las grúas de azúcar
@@ -47,16 +46,15 @@ public class Plataforma {
         monitor.lock();
         try {
             // Protocolo de entrada
-            while (almacenados.size() > (CAPACIDAD - 1)) {
+            while (almacenado != null) {
                 imprimirConTimestamp("\t El barco con id: " + barco.getIdentificador() + " está bloqueado por la plataforma.");
                 esperaMercante.await();
             }
             // Acción
-            TIPO_CARGAMENTO nuevoCargamento = barco.obtenerCargamentoAleatorio();
-            almacenados.add(nuevoCargamento);
-            imprimirConTimestamp("\t El barco con id: " + barco.getIdentificador() + " añade un cargamento" + nuevoCargamento.toString() + "a la plataforma.");
+            almacenado = cargamento;
+            imprimirConTimestamp("\t El barco con id: " + barco.getIdentificador() + " añade un cargamento de " + cargamento.toString() + " a la plataforma.");
             // Protocolo de salida: Desbloquea únicamente a la grúa bloqueada que corresponda con el cargamento depositado
-            switch (nuevoCargamento) {
+            switch (cargamento) {
                 case AZUCAR:
                     esperaAzucar.signal();
                     imprimirConTimestamp("\t Se ha desbloqueado G-azúcar.");
@@ -70,7 +68,7 @@ public class Plataforma {
                     imprimirConTimestamp("\t Se ha desbloqueado G-sal.");
                     break;
             }
-            imprimirConTimestamp("\t El barco con id: " + barco.getIdentificador() + " finalmente ha añadido un cargamento a la plataforma.");
+            imprimirConTimestamp("\t El barco con id: " + barco.getIdentificador() + " finalmente ha añadido un cargamento a la plataforma. Cargamentos restantes: " + barco.getCargamentosRestantes());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -82,8 +80,8 @@ public class Plataforma {
         monitor.lock();
         try {
             // Protocolo de entrada: Se bloquea si no hay ningun cargamento en la plataforma o el cargamento no coincide con la grua
-            while (almacenados.size() == 0 || (almacenados.get(0) != grua.getTipo())) {
-                imprimirConTimestamp("\t La grúa con id: " + grua.getIdentificador() + " está bloqueada.");
+            while (almacenado == null || (almacenado != grua.getTipo())) {
+                imprimirConTimestamp("\t La grúa (" + grua.getTipo().toString() + ") con id: " + grua.getIdentificador() + " está bloqueada.");
                 switch (grua.getTipo()) {
                     case AZUCAR:
                         esperaAzucar.await();
@@ -97,16 +95,44 @@ public class Plataforma {
                 }
             }
             // Acción: consiste en quitar el cargamento de la plataforma
-            almacenados.remove(0);
-            imprimirConTimestamp("\t La grúa con id: " + grua.getIdentificador() + " vacía la plataforma");
+            almacenado = null;
+            imprimirConTimestamp("\t La grúa (" + grua.getTipo().toString() + ") con id: " + grua.getIdentificador() + " vacía la plataforma");
             // Protocolo de salida: consiste en notificárselo al barco mercante por si puediese estar bloqueado
             esperaMercante.signal();
-            imprimirConTimestamp("\t La grúa con id: " + grua.getIdentificador() + " finalmente ha vaciado la plataforma");
+
+            imprimirConTimestamp("\t La grúa (" + grua.getTipo().toString() + ") con id: " + grua.getIdentificador() + " finalmente ha vaciado la plataforma");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             monitor.unlock();
         }
+    }
+
+    /**
+     * Método accesor del atributo almacenado.
+     *
+     * @return El cargamento almacenado
+     */
+    public synchronized TIPO_CARGAMENTO getAlmacenado() {
+        return almacenado;
+    }
+
+    /**
+     * Método modificador del atributo activo
+     *
+     * @param activo True si la plataforma debe seguir funcionando, false en caso contrario
+     */
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    /**
+     * Método accesor del atributo activo
+     *
+     * @return El estado de funcionamiento de la plataforma
+     */
+    public boolean getActivo() {
+        return activo;
     }
 
     /**

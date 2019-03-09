@@ -3,8 +3,6 @@ import java.util.Random;
 
 public class BarcoMercante extends Barco {
 
-    private static final int CARGAMENTOS_DISTINTOS = 3;     // Número de barcos de salida creados para la simulación
-
     private int depositoAzucar;         // Cantidad de cargamentos de azúcar
     private int depositoHarina;         // Cantidad de cargamentos de harina
     private int depositoSal;            // Cantidad de cargamentos de sal
@@ -40,30 +38,30 @@ public class BarcoMercante extends Barco {
         // Almacenamos los valores con cantidades positivas
 
         ArrayList<String> cargamentosDisponibles = new ArrayList<>();
-        if (depositoAzucar != 0) cargamentosDisponibles.add("Azucar");
-        if (depositoHarina != 0) cargamentosDisponibles.add("Harina");
-        if (depositoSal != 0) cargamentosDisponibles.add("Sal");
+        if (depositoAzucar > 0) cargamentosDisponibles.add("Azucar");
+        if (depositoHarina > 0) cargamentosDisponibles.add("Harina");
+        if (depositoSal > 0) cargamentosDisponibles.add("Sal");
 
         // Elegimos aleatoriamente un cargamento de los almacenados en la nueva colección y lo devolvemos
 
-        Random aleatorio = new Random(System.currentTimeMillis());
-        int seleccion = aleatorio.nextInt(cargamentosDisponibles.size()) + 1;
-        String resultado;
+        Random aleatorio = new Random();
+        int indice = aleatorio.nextInt(cargamentosDisponibles.size());
 
-        resultado = cargamentosDisponibles.get(seleccion);
+        String resultado;
+        resultado = cargamentosDisponibles.get(indice);
 
         switch (resultado) {
             case "Azucar":
                 cargamento = TIPO_CARGAMENTO.AZUCAR;
-                depositoAzucar--;
+                setDepositoAzucar(getDepositoAzucar() - 1);
                 break;
             case "Harina":
                 cargamento = TIPO_CARGAMENTO.HARINA;
-                depositoHarina--;
+                setDepositoHarina(getDepositoHarina() - 1);
                 break;
             case "Sal":
                 cargamento = TIPO_CARGAMENTO.SAL;
-                depositoSal--;
+                setDepositoSal(getDepositoSal() - 1);
                 break;
         }
 
@@ -129,16 +127,8 @@ public class BarcoMercante extends Barco {
      *
      * @return La suma de los distintos depósitos
      */
-    public int getCargamentosRestantes() {
-        return depositoAzucar + depositoHarina + depositoSal;
+    public synchronized int getCargamentosRestantes() {
+        return (depositoAzucar + depositoHarina + depositoSal);
     }
 
-    /**
-     * Imprime un mensaje con marca de tiempo por consola en una línea
-     *
-     * @param mensaje Mensaje a imprimir
-     */
-    private void imprimirConTimestamp(String mensaje) {
-        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje);
-    }
 }

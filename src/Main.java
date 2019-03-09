@@ -42,7 +42,7 @@ public class Main {
         }
 
         // Creación e incorporación de un barco mercante. Llevará el identificador 0 para distinguirlo.
-        Barco mercante = new BarcoMercante(0, ESTADO_BARCO.ENTRADA, 12, 20, 5);
+        Barco mercante = new BarcoMercante(0, ESTADO_BARCO.ENTRADA, 1, 1, 1);
         barcos.add(mercante);
 
         // Creación de grúas. Sus indices comenzarán a partir del 10 para distinguirlas.
@@ -64,7 +64,7 @@ public class Main {
         Collections.shuffle(gruas);                             // Lo mismo pero para grúas
         Iterator<Grua> gruaIterator = gruas.iterator();
         while (gruaIterator.hasNext()) {
-            Thread hiloGrua = new Thread(barcoIterator.next());
+            Thread hiloGrua = new Thread(gruaIterator.next());
             hiloGrua.start();
             hilos.add(hiloGrua);
         }
