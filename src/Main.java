@@ -27,6 +27,7 @@ public class Main {
      */
     private void simulacion() {
         List<Barco> barcos = new ArrayList<>();             // Colección de barcos simulados
+        List<Grua> gruas = new ArrayList<>();               // Colección de grúas simuladas
         int id = 1;                                         // Identificador asignado a cada barco
 
         // Creación de barcos
@@ -44,6 +45,11 @@ public class Main {
         Barco mercante = new BarcoMercante(0, ESTADO_BARCO.ENTRADA, 12, 20, 5);
         barcos.add(mercante);
 
+        // Creación de grúas. Sus indices comenzarán a partir del 10 para distinguirlas.
+        gruas.add(new Grua(10, TIPO_CARGAMENTO.AZUCAR));
+        gruas.add(new Grua(11, TIPO_CARGAMENTO.HARINA));
+        gruas.add(new Grua(12, TIPO_CARGAMENTO.SAL));
+
         // Ejecución de la simulación
 
         Collections.shuffle(barcos);                        // Distribuye el orden de los barcos
@@ -53,6 +59,14 @@ public class Main {
             Thread hiloBarco = new Thread(barcoIterator.next());
             hiloBarco.start();                              // Lanza cada hilo
             hilos.add(hiloBarco);                           // Guarda el hilo instanciado y lanzado
+        }
+
+        Collections.shuffle(gruas);                             // Lo mismo pero para grúas
+        Iterator<Grua> gruaIterator = gruas.iterator();
+        while (gruaIterator.hasNext()) {
+            Thread hiloGrua = new Thread(barcoIterator.next());
+            hiloGrua.start();
+            hilos.add(hiloGrua);
         }
 
         for (Thread hilo : hilos) {                         // Espera a que terminen todos los hilos
