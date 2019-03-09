@@ -26,7 +26,6 @@ public class BarcoMercante extends Barco {
         this.depositoSal = depositoSal;
     }
 
-
     /**
      * Devuelve un cargamento al azar transportado por el barco mercante.
      *

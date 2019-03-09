@@ -46,21 +46,24 @@ public class Plataforma {
     public void poner(BarcoMercante barco, TIPO_CARGAMENTO cargamento) {
         monitor.lock();
         try {
-            // Permiso de entrada
+            // Protocolo de entrada
             while (almacenados.size() > (CAPACIDAD - 1)) {
                 esperaMercante.await();
             }
             // Acción
             TIPO_CARGAMENTO nuevoCargamento = barco.obtenerCargamentoAleatorio();
             almacenados.add(nuevoCargamento);
-            // Permiso de salida: Desbloquea únicamente a la grúa bloqueada que corresponda con el cargamento depositado
+            // Protocolo de salida: Desbloquea únicamente a la grúa bloqueada que corresponda con el cargamento depositado
             switch (nuevoCargamento) {
                 case AZUCAR:
                     esperaAzucar.signal();
+                    break;
                 case HARINA:
                     esperaHarina.signal();
+                    break;
                 case SAL:
                     esperaSal.signal();
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,7 +73,31 @@ public class Plataforma {
     }
 
     public void coger(Grua grua) {
-
+        monitor.lock();
+        try {
+            // Protocolo de entrada: Se bloquea si no hay ningun cargamento en la plataforma o el cargamento no coincide con la grua
+            while (almacenados.size() == 0 || (almacenados.get(0) != grua.getTipo())) {
+                switch (grua.getTipo()) {
+                    case AZUCAR:
+                        esperaAzucar.await();
+                        break;
+                    case HARINA:
+                        esperaHarina.await();
+                        break;
+                    case SAL:
+                        esperaSal.await();
+                        break;
+                }
+            }
+            // Acción: consiste en quitar el cargamento de la plataforma
+            almacenados.remove(0);
+            // Protocolo de salida: consiste en notificárselo al barco mercante por si puediese estar bloqueado
+            esperaMercante.signal();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            monitor.unlock();
+        }
     }
 
     /**
