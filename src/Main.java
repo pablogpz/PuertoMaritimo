@@ -70,7 +70,7 @@ public class Main {
             }
         }
 
-        // Para las grúas bloqueadas esperando por más cargamentos
+        // Detiene las grúas bloqueadas esperando por más cargamentos
         Plataforma.recuperarInstancia().setActiva(false);
 
         mostrarMensaje("FIN del HILO PRINCIPAL");

@@ -83,7 +83,7 @@ public class Plataforma {
     public void coger(Grua grua) {
         monitor.lock();
         try {
-            // Protocolo de entrada: Se bloquea si no hay ningun cargamento en la plataforma o el cargamento no coincide con la grua
+            // Protocolo de entrada: Se bloquea si la plataforma no está activa o no hay ningun cargamento en la plataforma o el cargamento no coincide con la grua
             while (getActiva() && (almacenado == null || almacenado != grua.getTipo())) {
                 imprimirConTimestamp("La grúa (" + grua.getTipo() + ") " + grua.getIdentificador() + " está bloqueada");
                 switch (grua.getTipo()) {
@@ -137,7 +137,7 @@ public class Plataforma {
         monitor.lock();
         try {
             this.activa = activa;
-            if (!getActiva()) {
+            if (!getActiva()) { // Desbloquea a las grúas bloqueadas esperando por cargamentos
                 esperaAzucar.signal();
                 esperaHarina.signal();
                 esperaSal.signal();
