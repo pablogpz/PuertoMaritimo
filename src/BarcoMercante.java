@@ -32,7 +32,7 @@ public class BarcoMercante extends Barco {
         while (getCargamentosRestantes() > 0)
             plataforma.poner(this, obtenerCargamentoAleatorio());
         // Ya no hay más cargamentos y abandona la zona de descarga
-        plataforma.setActivo(false);
+        imprimirConTimestamp("El barco " + getIdentificador() + " abandona la plataforma");
     }
 
     /**
@@ -127,6 +127,15 @@ public class BarcoMercante extends Barco {
      */
     public int getCargamentosRestantes() {
         return (getDepositoAzucar() + getDepositoHarina() + getDepositoSal());
+    }
+
+    /**
+     * Imprime un mensaje con marca de tiempo por consola en una línea
+     *
+     * @param mensaje Mensaje a imprimir
+     */
+    private void imprimirConTimestamp(String mensaje) {
+        System.out.println("\t\t[" + System.currentTimeMillis() + "] " + mensaje);
     }
 
 }

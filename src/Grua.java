@@ -7,11 +7,14 @@
 
 public class Grua implements Runnable {
 
+    Thread autoThread;                      // Autothread
+
     private int identificador;              // Identificador de la Grúa
     private TIPO_CARGAMENTO tipo;           // Tipo de la grúa (dependiente de los cargamentos que vaya a coger)
 
     /**
-     * Constructor parametrizado. Instancia una nueva grua a partir de un identificador y un tipo
+     * Constructor parametrizado. Instancia una nueva grua a partir de un identificador y un tipo.
+     * Lanza el autothread
      *
      * @param identificador Identificador de la grua
      * @param tipo          Tipo de la grua
@@ -19,6 +22,9 @@ public class Grua implements Runnable {
     public Grua(int identificador, TIPO_CARGAMENTO tipo) {
         this.identificador = identificador;
         this.tipo = tipo;
+
+        autoThread = new Thread(this);
+        autoThread.start();
     }
 
     /**
@@ -26,10 +32,13 @@ public class Grua implements Runnable {
      */
     @Override
     public void run() {
-        Plataforma plataforma = Plataforma.recuperarInstancia();    // Instancia Singleton de la plataforma
-        // Las gruas deberán estar operativas mientras haya un barco descargando o haya un cargamento en la plataforma
-        while (plataforma.getActivo() || plataforma.getAlmacenado() != null)
-            plataforma.coger(this);
+        if (autoThread.equals(Thread.currentThread())) {
+            Plataforma plataforma = Plataforma.recuperarInstancia();    // Instancia Singleton de la plataforma
+            // Las gruas deberán estar operativas mientras haya un barco descargando o haya un cargamento en la plataforma
+            while (plataforma.getActiva())
+                plataforma.coger(this);
+            System.out.println("\t\t La grua " + getTipo() + " " + getIdentificador() + " ha terminado su trabajo");
+        }
     }
 
     /**

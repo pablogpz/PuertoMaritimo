@@ -13,7 +13,7 @@ public class Main {
 
     private static final int NUM_BARCOS_ENTRADA_SIM = 3;    // Número de barcos de entrada creados para la simulación
     private static final int NUM_BARCOS_SALIDA_SIM = 3;     // Número de barcos de salida creados para la simulación
-    private static final int NUM_BARCOS_MERCANTES_SIM = 1;  // Número de barcos mercantes creados para la simulación
+    public static final int NUM_BARCOS_MERCANTES_SIM = 1;  // Número de barcos mercantes creados para la simulación
 
     /**
      * Constructor por defecto. Inicia la simulación
@@ -27,7 +27,6 @@ public class Main {
      */
     private void simulacion() {
         List<Barco> barcos = new ArrayList<>();             // Colección de barcos simulados
-        List<Grua> gruas = new ArrayList<>();               // Colección de grúas simuladas
         List<Thread> hilos = new ArrayList<>();             // Colección de hilos instanciados
         int id = 1;                                         // Identificador asignado a cada barco
 
@@ -48,9 +47,9 @@ public class Main {
             barcos.add(mercante);
         }
         // Creación de grúas. Sus indices comenzarán a partir del 10 para distinguirlas.
-        gruas.add(new Grua(10, TIPO_CARGAMENTO.AZUCAR));
-        gruas.add(new Grua(11, TIPO_CARGAMENTO.HARINA));
-        gruas.add(new Grua(12, TIPO_CARGAMENTO.SAL));
+        new Grua(10, TIPO_CARGAMENTO.AZUCAR);
+        new Grua(11, TIPO_CARGAMENTO.HARINA);
+        new Grua(12, TIPO_CARGAMENTO.SAL);
 
         // Ejecución de la simulación
 
@@ -59,12 +58,6 @@ public class Main {
             Thread hiloBarco = new Thread(barco);
             hiloBarco.start();                              // Lanza cada hilo
             hilos.add(hiloBarco);                           // Guarda el hilo instanciado y lanzado
-        }
-        Collections.shuffle(gruas);                         // Lo mismo pero para grúas
-        for (Grua grua : gruas) {
-            Thread hiloGrua = new Thread(grua);
-            hiloGrua.start();
-            hilos.add(hiloGrua);
         }
 
         // Espera a que terminen todos los hilos
@@ -76,6 +69,10 @@ public class Main {
                 mostrarMensaje(e.getMessage());
             }
         }
+
+        // Para las grúas bloqueadas esperando por más cargamentos
+        Plataforma.recuperarInstancia().setActiva(false);
+
         mostrarMensaje("FIN del HILO PRINCIPAL");
     }
 

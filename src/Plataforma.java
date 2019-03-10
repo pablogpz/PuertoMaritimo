@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Plataforma {
     private static Plataforma instancia = null;     // Instancia Singleton de la Plataforma
     private TIPO_CARGAMENTO almacenado;             // Cargamento almacenado en la Plataforma
-    private boolean activo;                         // Indica si la plataforma debe seguir funcionando
+    private boolean activa;                         // Bandera para indicar si la plataforma está operativa
 
     private Lock monitor;
     private Condition esperaAzucar;                 // Variable de espera para las grúas de Azúcar
@@ -24,7 +24,7 @@ public class Plataforma {
      * Constructor por defecto
      */
     private Plataforma() {
-        activo = true;
+        activa = true;
         almacenado = null;
         monitor = new ReentrantLock(true);
 
@@ -45,27 +45,29 @@ public class Plataforma {
         try {
             // Protocolo de entrada
             while (almacenado != null) {
-                imprimirConTimestamp("\t El barco mercante " + barco.getIdentificador() + " está bloqueado por la plataforma");
+                imprimirConTimestamp("El barco mercante " + barco.getIdentificador() + " está bloqueado por la plataforma");
                 esperaMercante.await();
             }
             // Acción
             almacenado = cargamento;
-            imprimirConTimestamp("\t El barco mercante " + barco.getIdentificador() + " añade un cargamento de " + cargamento + " a la plataforma");
+            imprimirConTimestamp("El barco mercante " + barco.getIdentificador() + " añade un cargamento de "
+                    + cargamento + " a la plataforma");
             // Protocolo de salida: Desbloquea únicamente a la grúa bloqueada que corresponda con el cargamento depositado
             switch (cargamento) {
                 case AZUCAR:
                     esperaAzucar.signal();
-                    imprimirConTimestamp("\t Se ha desbloqueado G-azúcar");
+                    imprimirConTimestamp("Se ha desbloqueado G-azúcar");
                     break;
                 case HARINA:
                     esperaHarina.signal();
-                    imprimirConTimestamp("\t Se ha desbloqueado G-harina");
+                    imprimirConTimestamp("Se ha desbloqueado G-harina");
                     break;
                 case SAL:
                     esperaSal.signal();
-                    imprimirConTimestamp("\t Se ha desbloqueado G-sal");
+                    imprimirConTimestamp("Se ha desbloqueado G-sal");
             }
-            imprimirConTimestamp("\t El barco mercante " + barco.getIdentificador() + " finalmente ha añadido un cargamento a la plataforma. Cargamentos restantes: " + barco.getCargamentosRestantes());
+            imprimirConTimestamp("El barco mercante " + barco.getIdentificador() +
+                    " finalmente ha añadido un cargamento a la plataforma. Cargamentos restantes: " + barco.getCargamentosRestantes());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -82,8 +84,8 @@ public class Plataforma {
         monitor.lock();
         try {
             // Protocolo de entrada: Se bloquea si no hay ningun cargamento en la plataforma o el cargamento no coincide con la grua
-            while (almacenado == null || almacenado != grua.getTipo()) {
-                imprimirConTimestamp("\t La grúa (" + grua.getTipo() + ") " + grua.getIdentificador() + " está bloqueada");
+            while (getActiva() && (almacenado == null || almacenado != grua.getTipo())) {
+                imprimirConTimestamp("La grúa (" + grua.getTipo() + ") " + grua.getIdentificador() + " está bloqueada");
                 switch (grua.getTipo()) {
                     case AZUCAR:
                         esperaAzucar.await();
@@ -97,10 +99,10 @@ public class Plataforma {
             }
             // Acción: consiste en quitar el cargamento de la plataforma
             almacenado = null;
-            imprimirConTimestamp("\t La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " vacía la plataforma");
+            imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " vacía la plataforma");
             // Protocolo de salida: consiste en notificárselo al barco mercante por si puediese estar bloqueado
             esperaMercante.signal();
-            imprimirConTimestamp("\t La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " finalmente ha vaciado la plataforma");
+            imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " finalmente ha vaciado la plataforma");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -118,21 +120,31 @@ public class Plataforma {
     }
 
     /**
-     * Método accesor del atributo activo
+     * Método accesor del atributo nBarcosMercantes
      *
-     * @return El estado de funcionamiento de la plataforma
+     * @return El cargamento almacenado
      */
-    public boolean getActivo() {
-        return activo;
+    public boolean getActiva() {
+        return activa;
     }
 
     /**
-     * Método modificador del atributo activo
+     * Método modificador del atributo activa
      *
-     * @param activo True si la plataforma debe seguir funcionando, false en caso contrario
+     * @param activa Nuevo estado de la plataforma
      */
-    public synchronized void setActivo(boolean activo) {
-        this.activo = activo;
+    public void setActiva(Boolean activa) {
+        monitor.lock();
+        try {
+            this.activa = activa;
+            if (!getActiva()) {
+                esperaAzucar.signal();
+                esperaHarina.signal();
+                esperaSal.signal();
+            }
+        } finally {
+            monitor.unlock();
+        }
     }
 
     /**
@@ -153,6 +165,6 @@ public class Plataforma {
      * @param mensaje Mensaje a imprimir
      */
     private void imprimirConTimestamp(String mensaje) {
-        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje);
+        System.out.println("\t\t[" + System.currentTimeMillis() + "] " + mensaje);
     }
 }
