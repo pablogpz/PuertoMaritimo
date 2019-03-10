@@ -33,11 +33,10 @@ public class Barco implements Runnable {
      */
     @Override
     public void run() {
-        Puerta puerta = Puerta.recuperarInstancia();        // Instancia Singleton de la puerta
+        Puerta puerta = Puerta.recuperarInstancia();                    // Instancia Singleton de la puerta
         TorreControl torreControl = TorreControl.recuperarInstancia();  // Instancia Singleton de la torre de control
-        Plataforma plataforma = Plataforma.recuperarInstancia();    // Instancia Singleton de la plataforma
 
-        switch (getEstado()) {                              // Determina la acción del barco adecuada a su estado
+        switch (getEstado()) {                                          // Determina la acción del barco adecuada a su estado
             case ENTRADA:
                 // Protocolo de entrada
                 torreControl.permisoEntrada(this);
@@ -45,15 +44,6 @@ public class Barco implements Runnable {
                 puerta.entrar(this);
                 // Protocolo de salida
                 torreControl.finEntrada(this);
-                // Si el barco que ha entrado es mercante, se dirigirá a la plataforma
-                if (this instanceof BarcoMercante) {
-                    // Mientras tenga cargamentos intentará soltarlos
-                    while (((BarcoMercante) this).getCargamentosRestantes() > 0) {
-                        plataforma.poner((BarcoMercante) this, ((BarcoMercante) this).obtenerCargamentoAleatorio());
-                    }
-                    // Ya no hay más cargamentos y abandona la zona de descarga
-                    plataforma.setActivo(false);
-                }
                 break;
             case SALIDA:
                 // Protocolo de entrada
@@ -62,7 +52,6 @@ public class Barco implements Runnable {
                 puerta.salir(this);
                 // Protocolo de salida
                 torreControl.finSalida(this);
-                break;
         }
     }
 
@@ -91,15 +80,6 @@ public class Barco implements Runnable {
      */
     public void setEstado(ESTADO_BARCO estado) {
         this.estado = estado;
-    }
-
-    /**
-     * Imprime un mensaje con marca de tiempo por consola en una línea
-     *
-     * @param mensaje Mensaje a imprimir
-     */
-    private void imprimirConTimestamp(String mensaje) {
-        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje);
     }
 
 }

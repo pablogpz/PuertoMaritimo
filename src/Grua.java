@@ -7,8 +7,8 @@
 
 public class Grua implements Runnable {
 
-    private int identificador;          // Identificador de la Grúa
-    private TIPO_CARGAMENTO tipo;             // Tipo de la grúa (dependiente de los cargamentos que vaya a coger)
+    private int identificador;              // Identificador de la Grúa
+    private TIPO_CARGAMENTO tipo;           // Tipo de la grúa (dependiente de los cargamentos que vaya a coger)
 
     /**
      * Constructor parametrizado. Instancia una nueva grua a partir de un identificador y un tipo
@@ -28,9 +28,8 @@ public class Grua implements Runnable {
     public void run() {
         Plataforma plataforma = Plataforma.recuperarInstancia();    // Instancia Singleton de la plataforma
         // Las gruas deberán estar operativas mientras haya un barco descargando o haya un cargamento en la plataforma
-        while (plataforma.getActivo() || plataforma.getAlmacenado() != null) {
+        while (plataforma.getActivo() || plataforma.getAlmacenado() != null)
             plataforma.coger(this);
-        }
     }
 
     /**
@@ -56,7 +55,7 @@ public class Grua implements Runnable {
      *
      * @param identificador Nuevo identificador de la grúa
      */
-    public void setIdentificador(int identificador) {
+    public synchronized void setIdentificador(int identificador) {
         this.identificador = identificador;
     }
 
@@ -65,7 +64,7 @@ public class Grua implements Runnable {
      *
      * @param tipo Nuevo tipo de la grúa
      */
-    public void setTipo(TIPO_CARGAMENTO tipo) {
+    public synchronized void setTipo(TIPO_CARGAMENTO tipo) {
         this.tipo = tipo;
     }
 }

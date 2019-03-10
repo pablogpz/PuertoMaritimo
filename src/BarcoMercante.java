@@ -7,21 +7,32 @@ public class BarcoMercante extends Barco {
     private int depositoHarina;         // Cantidad de cargamentos de harina
     private int depositoSal;            // Cantidad de cargamentos de sal
 
-
     /**
      * Constructor parametrizado. Instancia un nuevo barco a partir de un identificador, estado y cantidades de cargamentos correspondientes.
      *
      * @param identificador  Identificador del barco
-     * @param estado         Estado inicial del barco
      * @param depositoAzucar Cantidad de cargamentos de azúcar
      * @param depositoHarina Cantidad de cargamentos de harina
      * @param depositoSal    Cantidad de cargamentos de sal
      */
-    public BarcoMercante(int identificador, ESTADO_BARCO estado, int depositoAzucar, int depositoHarina, int depositoSal) {
-        super(identificador, estado);
+    public BarcoMercante(int identificador, int depositoAzucar, int depositoHarina, int depositoSal) {
+        super(identificador, ESTADO_BARCO.ENTRADA);
         this.depositoAzucar = depositoAzucar;
         this.depositoHarina = depositoHarina;
         this.depositoSal = depositoSal;
+    }
+
+    @Override
+    public void run() {
+        Plataforma plataforma = Plataforma.recuperarInstancia();
+
+        super.run();
+
+        // Mientras tenga cargamentos intentará soltarlos
+        while (getCargamentosRestantes() > 0)
+            plataforma.poner(this, obtenerCargamentoAleatorio());
+        // Ya no hay más cargamentos y abandona la zona de descarga
+        plataforma.setActivo(false);
     }
 
     /**
@@ -30,39 +41,26 @@ public class BarcoMercante extends Barco {
      * @return cargamento El cargamento elegido al azar
      */
     public TIPO_CARGAMENTO obtenerCargamentoAleatorio() {
+        ArrayList<TIPO_CARGAMENTO> cargamentosDisponibles = new ArrayList<>();
 
-        // Cargamento a devolver
+        // Inicializa la lista de posibilidades
+        if (depositoAzucar > 0) cargamentosDisponibles.add(TIPO_CARGAMENTO.AZUCAR);
+        if (depositoHarina > 0) cargamentosDisponibles.add(TIPO_CARGAMENTO.HARINA);
+        if (depositoSal > 0) cargamentosDisponibles.add(TIPO_CARGAMENTO.SAL);
 
-        TIPO_CARGAMENTO cargamento = null;
+        // Extrae un cargamento aleatorio
+        TIPO_CARGAMENTO cargamento = cargamentosDisponibles.get(new Random().nextInt(cargamentosDisponibles.size()));
 
-        // Almacenamos los valores con cantidades positivas
-
-        ArrayList<String> cargamentosDisponibles = new ArrayList<>();
-        if (depositoAzucar > 0) cargamentosDisponibles.add("Azucar");
-        if (depositoHarina > 0) cargamentosDisponibles.add("Harina");
-        if (depositoSal > 0) cargamentosDisponibles.add("Sal");
-
-        // Elegimos aleatoriamente un cargamento de los almacenados en la nueva colección y lo devolvemos
-
-        Random aleatorio = new Random();
-        int indice = aleatorio.nextInt(cargamentosDisponibles.size());
-
-        String resultado;
-        resultado = cargamentosDisponibles.get(indice);
-
-        switch (resultado) {
-            case "Azucar":
-                cargamento = TIPO_CARGAMENTO.AZUCAR;
+        // Decrementa el contador de dicho cargamento
+        switch (cargamento) {
+            case AZUCAR:
                 setDepositoAzucar(getDepositoAzucar() - 1);
                 break;
-            case "Harina":
-                cargamento = TIPO_CARGAMENTO.HARINA;
+            case HARINA:
                 setDepositoHarina(getDepositoHarina() - 1);
                 break;
-            case "Sal":
-                cargamento = TIPO_CARGAMENTO.SAL;
+            case SAL:
                 setDepositoSal(getDepositoSal() - 1);
-                break;
         }
 
         return cargamento;
@@ -100,7 +98,7 @@ public class BarcoMercante extends Barco {
      *
      * @param depositoAzucar Nueva cantidad del atributo depositoAzucar
      */
-    public void setDepositoAzucar(int depositoAzucar) {
+    public synchronized void setDepositoAzucar(int depositoAzucar) {
         this.depositoAzucar = depositoAzucar;
     }
 
@@ -109,7 +107,7 @@ public class BarcoMercante extends Barco {
      *
      * @param depositoHarina Nueva cantidad del atributo depositoHarina
      */
-    public void setDepositoHarina(int depositoHarina) {
+    public synchronized void setDepositoHarina(int depositoHarina) {
         this.depositoHarina = depositoHarina;
     }
 
@@ -118,7 +116,7 @@ public class BarcoMercante extends Barco {
      *
      * @param depositoSal Nueva cantidad del atributo depositoSal
      */
-    public void setDepositoSal(int depositoSal) {
+    public synchronized void setDepositoSal(int depositoSal) {
         this.depositoSal = depositoSal;
     }
 
@@ -127,8 +125,8 @@ public class BarcoMercante extends Barco {
      *
      * @return La suma de los distintos depósitos
      */
-    public synchronized int getCargamentosRestantes() {
-        return (depositoAzucar + depositoHarina + depositoSal);
+    public int getCargamentosRestantes() {
+        return (getDepositoAzucar() + getDepositoHarina() + getDepositoSal());
     }
 
 }

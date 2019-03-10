@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -14,6 +13,7 @@ public class Main {
 
     private static final int NUM_BARCOS_ENTRADA_SIM = 3;    // Número de barcos de entrada creados para la simulación
     private static final int NUM_BARCOS_SALIDA_SIM = 3;     // Número de barcos de salida creados para la simulación
+    private static final int NUM_BARCOS_MERCANTES_SIM = 1;  // Número de barcos mercantes creados para la simulación
 
     /**
      * Constructor por defecto. Inicia la simulación
@@ -28,6 +28,7 @@ public class Main {
     private void simulacion() {
         List<Barco> barcos = new ArrayList<>();             // Colección de barcos simulados
         List<Grua> gruas = new ArrayList<>();               // Colección de grúas simuladas
+        List<Thread> hilos = new ArrayList<>();             // Colección de hilos instanciados
         int id = 1;                                         // Identificador asignado a cada barco
 
         // Creación de barcos
@@ -40,11 +41,12 @@ public class Main {
             barcos.add(new Barco(id, ESTADO_BARCO.SALIDA));
             id++;
         }
-
-        // Creación e incorporación de un barco mercante. Llevará el identificador 0 para distinguirlo.
-        Barco mercante = new BarcoMercante(0, ESTADO_BARCO.ENTRADA, 1, 1, 1);
-        barcos.add(mercante);
-
+        // Creación e incorporación de los barcos mercantes. Llevarán identificadores negativos para distinguirlos.
+        Barco mercante;
+        for (int i = -1; i >= -NUM_BARCOS_MERCANTES_SIM; i--) {
+            mercante = new BarcoMercante(i, 1, 1, 1);
+            barcos.add(mercante);
+        }
         // Creación de grúas. Sus indices comenzarán a partir del 10 para distinguirlas.
         gruas.add(new Grua(10, TIPO_CARGAMENTO.AZUCAR));
         gruas.add(new Grua(11, TIPO_CARGAMENTO.HARINA));
@@ -53,23 +55,21 @@ public class Main {
         // Ejecución de la simulación
 
         Collections.shuffle(barcos);                        // Distribuye el orden de los barcos
-        Iterator<Barco> barcoIterator = barcos.iterator();
-        List<Thread> hilos = new ArrayList<>();             // Colección de hilos instanciados
-        while (barcoIterator.hasNext()) {
-            Thread hiloBarco = new Thread(barcoIterator.next());
+        for (Barco barco : barcos) {
+            Thread hiloBarco = new Thread(barco);
             hiloBarco.start();                              // Lanza cada hilo
             hilos.add(hiloBarco);                           // Guarda el hilo instanciado y lanzado
         }
-
-        Collections.shuffle(gruas);                             // Lo mismo pero para grúas
-        Iterator<Grua> gruaIterator = gruas.iterator();
-        while (gruaIterator.hasNext()) {
-            Thread hiloGrua = new Thread(gruaIterator.next());
+        Collections.shuffle(gruas);                         // Lo mismo pero para grúas
+        for (Grua grua : gruas) {
+            Thread hiloGrua = new Thread(grua);
             hiloGrua.start();
             hilos.add(hiloGrua);
         }
 
-        for (Thread hilo : hilos) {                         // Espera a que terminen todos los hilos
+        // Espera a que terminen todos los hilos
+
+        for (Thread hilo : hilos) {
             try {
                 hilo.join();
             } catch (InterruptedException e) {
