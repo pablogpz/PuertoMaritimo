@@ -67,15 +67,6 @@ public class Grua implements Runnable {
     }
 
     /**
-     * Método modificador del atributo {@link Grua#identificador}
-     *
-     * @param identificador Nuevo identificador de la grúa
-     */
-    public synchronized void setIdentificador(int identificador) {
-        this.identificador = identificador;
-    }
-
-    /**
      * Método modificador del atributo {@link Grua#tipo}
      *
      * @param tipo Nuevo tipo de la grúa
