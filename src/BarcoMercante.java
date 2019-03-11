@@ -80,6 +80,15 @@ public class BarcoMercante extends Barco {
     }
 
     /**
+     * Método que devuelve la cantidad total de cargamentos transportados por el Barco
+     *
+     * @return La suma de los distintos depósitos
+     */
+    public int getCargamentosRestantes() {
+        return (getDepositoAzucar() + getDepositoHarina() + getDepositoSal());
+    }
+
+    /**
      * Método accesor del atributo {@link BarcoMercante#depositoAzucar}
      *
      * @return Cantidad de cargamentos de azúcar
@@ -131,15 +140,6 @@ public class BarcoMercante extends Barco {
      */
     public synchronized void setDepositoSal(int depositoSal) {
         this.depositoSal = depositoSal;
-    }
-
-    /**
-     * Método que devuelve la cantidad total de cargamentos transportados por el Barco
-     *
-     * @return La suma de los distintos depósitos
-     */
-    public int getCargamentosRestantes() {
-        return (getDepositoAzucar() + getDepositoHarina() + getDepositoSal());
     }
 
     /**
