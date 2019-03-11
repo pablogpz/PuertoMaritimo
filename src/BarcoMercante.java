@@ -3,9 +3,18 @@ import java.util.Random;
 
 public class BarcoMercante extends Barco {
 
-    private int depositoAzucar;         // Cantidad de cargamentos de azúcar
-    private int depositoHarina;         // Cantidad de cargamentos de harina
-    private int depositoSal;            // Cantidad de cargamentos de sal
+    /**
+     * Cantidad de cargamentos de azúcar
+     */
+    private int depositoAzucar;
+    /**
+     * Cantidad de cargamentos de harina
+     */
+    private int depositoHarina;
+    /**
+     * Cantidad de cargamentos de sal
+     */
+    private int depositoSal;
 
     /**
      * Constructor parametrizado. Instancia un nuevo barco a partir de un identificador, estado y cantidades de cargamentos correspondientes.
@@ -22,10 +31,14 @@ public class BarcoMercante extends Barco {
         this.depositoSal = depositoSal;
     }
 
+    /**
+     * TODO Documentar el método run()
+     */
     @Override
     public void run() {
         Plataforma plataforma = Plataforma.recuperarInstancia();
 
+        // Protocolo común a los barcos de entrada
         super.run();
 
         // Mientras tenga cargamentos intentará soltarlos

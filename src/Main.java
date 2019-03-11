@@ -11,9 +11,13 @@ import java.util.List;
 
 public class Main {
 
-    private static final int NUM_BARCOS_ENTRADA_SIM = 3;    // Número de barcos de entrada creados para la simulación
+    private static final int NUM_BARCOS_ENTRADA_SIM = 2;    // Número de barcos de entrada creados para la simulación
     private static final int NUM_BARCOS_SALIDA_SIM = 3;     // Número de barcos de salida creados para la simulación
-    public static final int NUM_BARCOS_MERCANTES_SIM = 1;  // Número de barcos mercantes creados para la simulación
+    private static final int NUM_BARCOS_MERCANTES_SIM = 2;  // Número de barcos mercantes creados para la simulación
+
+    private static final int NUM_CONT_AZUCAR_BR = 12;       // Número de contenedores de azúcar que transporta un barco mercante
+    private static final int NUM_CONT_HARINA_BR = 5;        // Número de contenedores de harina que transporta un barco mercante
+    private static final int NUM_CONT_SAL_BR = 20;          // Número de contenedores de sal que transporta un barco mercante
 
     /**
      * Constructor por defecto. Inicia la simulación
@@ -43,10 +47,10 @@ public class Main {
         // Creación e incorporación de los barcos mercantes. Llevarán identificadores negativos para distinguirlos.
         Barco mercante;
         for (int i = -1; i >= -NUM_BARCOS_MERCANTES_SIM; i--) {
-            mercante = new BarcoMercante(i, 1, 1, 1);
+            mercante = new BarcoMercante(i, NUM_CONT_AZUCAR_BR, NUM_CONT_HARINA_BR, NUM_CONT_SAL_BR);
             barcos.add(mercante);
         }
-        // Creación de grúas. Sus indices comenzarán a partir del 10 para distinguirlas.
+        // Creación de grúas. Sus indices comenzarán a partir del 10 para distinguirlas
         new Grua(10, TIPO_CARGAMENTO.AZUCAR);
         new Grua(11, TIPO_CARGAMENTO.HARINA);
         new Grua(12, TIPO_CARGAMENTO.SAL);
@@ -60,7 +64,7 @@ public class Main {
             hilos.add(hiloBarco);                           // Guarda el hilo instanciado y lanzado
         }
 
-        // Espera a que terminen todos los hilos
+        // Espera a que terminen todos los hilos de barcos
 
         for (Thread hilo : hilos) {
             try {

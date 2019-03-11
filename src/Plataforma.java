@@ -10,15 +10,25 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author José Ángel Concha Carrasco
  */
 public class Plataforma {
-    private static Plataforma instancia = null;     // Instancia Singleton de la Plataforma
-    private TIPO_CARGAMENTO almacenado;             // Cargamento almacenado en la Plataforma
-    private boolean activa;                         // Bandera para indicar si la plataforma está operativa
+
+    /**
+     * Instancia Singleton de la plataforma
+     */
+    private static Plataforma instancia = null;
+    /**
+     * Cargamento ocupando la plataforma
+     */
+    private TIPO_CARGAMENTO almacenado;
+    /**
+     * Bandera para indicar si la plataforma está operativa
+     */
+    private boolean activa;
 
     private Lock monitor;
     private Condition esperaAzucar;                 // Variable de espera para las grúas de Azúcar
     private Condition esperaHarina;                 // Variable de espera para las grúas de Harina
     private Condition esperaSal;                    // Variable de espera para las grúas de Sal
-    private Condition esperaMercante;               // Varible de espera para el barco mercante
+    private Condition esperaMercante;               // Varible de espera para los barcos mercantes
 
     /**
      * Constructor por defecto
@@ -44,12 +54,12 @@ public class Plataforma {
         monitor.lock();
         try {
             // Protocolo de entrada
-            while (almacenado != null) {
+            while (getAlmacenado() != null) {
                 imprimirConTimestamp("El barco mercante " + barco.getIdentificador() + " está bloqueado por la plataforma");
                 esperaMercante.await();
             }
             // Acción
-            almacenado = cargamento;
+            setAlmacenado(cargamento);
             imprimirConTimestamp("El barco mercante " + barco.getIdentificador() + " añade un cargamento de "
                     + cargamento + " a la plataforma");
             // Protocolo de salida: Desbloquea únicamente a la grúa bloqueada que corresponda con el cargamento depositado
@@ -84,7 +94,7 @@ public class Plataforma {
         monitor.lock();
         try {
             // Protocolo de entrada: Se bloquea si la plataforma no está activa o no hay ningun cargamento en la plataforma o el cargamento no coincide con la grua
-            while (getActiva() && (almacenado == null || almacenado != grua.getTipo())) {
+            while (getActiva() && (getAlmacenado() == null || getAlmacenado() != grua.getTipo())) {
                 imprimirConTimestamp("La grúa (" + grua.getTipo() + ") " + grua.getIdentificador() + " está bloqueada");
                 switch (grua.getTipo()) {
                     case AZUCAR:
@@ -97,12 +107,14 @@ public class Plataforma {
                         esperaSal.await();
                 }
             }
-            // Acción: consiste en quitar el cargamento de la plataforma
-            almacenado = null;
-            imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " vacía la plataforma");
-            // Protocolo de salida: consiste en notificárselo al barco mercante por si puediese estar bloqueado
-            esperaMercante.signal();
-            imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " finalmente ha vaciado la plataforma");
+            if (getActiva()) {  // Comprueba que la plataforma sigue operativa al retormar el control
+                // Acción: consiste en quitar el cargamento de la plataforma
+                setAlmacenado(null);
+                imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " vacía la plataforma");
+                // Protocolo de salida: consiste en notificárselo al barco mercante por si puediese estar bloqueado
+                esperaMercante.signal();
+                imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " finalmente ha vaciado la plataforma");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -111,7 +123,7 @@ public class Plataforma {
     }
 
     /**
-     * Método accesor del atributo almacenado.
+     * Método accesor del atributo {@link Plataforma:almacenado}
      *
      * @return El cargamento almacenado
      */
@@ -120,7 +132,7 @@ public class Plataforma {
     }
 
     /**
-     * Método accesor del atributo nBarcosMercantes
+     * Método accesor del atributo {@link Plataforma:nBarcosMercantes}
      *
      * @return El cargamento almacenado
      */
@@ -129,7 +141,16 @@ public class Plataforma {
     }
 
     /**
-     * Método modificador del atributo activa
+     * Método modificador del atributo {@link Plataforma:almacenado}
+     *
+     * @param almacenado Nuevo cargamento en la plataforma
+     */
+    private void setAlmacenado(TIPO_CARGAMENTO almacenado) {
+        this.almacenado = almacenado;
+    }
+
+    /**
+     * Método modificador del atributo {@link Plataforma:activa}
      *
      * @param activa Nuevo estado de la plataforma
      */
@@ -137,7 +158,7 @@ public class Plataforma {
         monitor.lock();
         try {
             this.activa = activa;
-            if (!getActiva()) { // Desbloquea a las grúas bloqueadas esperando por cargamentos
+            if (!getActiva()) {             // Desbloquea a las grúas bloqueadas esperando por cargamentos
                 esperaAzucar.signal();
                 esperaHarina.signal();
                 esperaSal.signal();
