@@ -1,6 +1,5 @@
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
@@ -25,6 +24,9 @@ public class ZonaRepostaje {
      * Bandera para indicar si la zona de repostaje está operativa
      */
     private boolean activa;
+
+    /* SEMÁFOROS */
+
     /**
      * Semáforo de exclusión mutua sobre la colección de contenedores de petróleo
      */
@@ -36,11 +38,11 @@ public class ZonaRepostaje {
     /**
      * Semáforos para resolver la condición de sincronización inicial de que todos los barcos se esperen unos a otros
      */
-    private List<Semaphore> esperaBarcos;
+    private Map<Integer, Semaphore> esperaBarcos;
     /**
      * Semáforos para bloquear a cada barco cuando vacíen su contenedor
      */
-    private List<Semaphore> contenVacio;
+    private Map<Integer, Semaphore> contenVacio;
     /**
      * Semáforo en el que bloquear al repostador
      */
@@ -55,34 +57,32 @@ public class ZonaRepostaje {
         mutexContenPetroleo = new Semaphore(1);
         mutexContenAgua = new Semaphore(1);
 
-        esperaBarcos = new ArrayList<>(Main.NUM_BARCOS_PETROLEROS_SIM);
-        contenVacio = new ArrayList<>(Main.NUM_BARCOS_PETROLEROS_SIM);
-        for (int i = 0; i < Main.NUM_BARCOS_PETROLEROS_SIM; i++) {
-            esperaBarcos.add(new Semaphore(0));
-            contenVacio.add(new Semaphore(0));
-        }
+        esperaBarcos = new HashMap<>(Main.NUM_BARCOS_PETROLEROS_SIM);
+        contenVacio = new HashMap<>(Main.NUM_BARCOS_PETROLEROS_SIM);
         esperaRepostador = new Semaphore(0);
     }
 
     /**
-     * Registra un nuevo contenedor de petróleo reservado para un barco por identificador
+     * Registra los semáforos requeridos para cada barco petrolero esperado
      *
-     * @param barco Barco que registra el contenedor
-     * @return Si se pudo registrar el contenedor. Devuelve Falso si ya hay un contenedor registrado con ese identificador
-     * o el barco es nulo, Verdadero en otro caso
+     * @param barcosPetroleros Colección de barcos petroleros esperados
      */
-    public boolean registrarContenedor(Barco barco) {
-        if (barco != null) {
-            if (!contenPetroleo.containsKey(barco.getIdentificador())) {
-                contenPetroleo.put(barco.getIdentificador(), new ContenedorPetroleo(ContenedorPetroleo.CANT_INICIAL_CONT_PETROLEO,
-                        ContenedorPetroleo.CANTIDAD_MAX_PETROLEO));
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+    public void registrarSemaforos(Collection<? extends BarcoPetrolero> barcosPetroleros) {
+        for (BarcoPetrolero barcosPetrolero : barcosPetroleros) {
+            esperaBarcos.put(barcosPetrolero.getIdentificador(), new Semaphore(0));
+            contenVacio.put(barcosPetrolero.getIdentificador(), new Semaphore(0));
         }
+    }
+
+    /**
+     * Registra un contenedor de petróleo para cada barco petrolero esperado
+     *
+     * @param barcosPetroleros Colección de barcos petroleros esperados
+     */
+    public void registrarContenedores(Collection<? extends BarcoPetrolero> barcosPetroleros) {
+        for (BarcoPetrolero barcosPetrolero : barcosPetroleros)
+            contenPetroleo.put(barcosPetrolero.getIdentificador(), new ContenedorPetroleo(ContenedorPetroleo.CANT_INICIAL_CONT_PETROLEO,
+                    ContenedorPetroleo.CANTIDAD_MAX_PETROLEO));
     }
 
     /**
@@ -103,16 +103,37 @@ public class ZonaRepostaje {
      * @param cantidad Cantidad de agua a repostar en el barco
      */
     public void repostarAgua(BarcoPetrolero barco, int cantidad) {
-        // TODO - implement ZonaRepostaje.repostarAgua
+        // Protocolo de entrada: Exclusión mutua sobre el depósito de agua
+        imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " INTENTA repostar " + cantidad + " L de AGUA");
+        try {
+            mutexContenAgua.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // Acción: Repostar una cantidad de agua
+        imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " REPOSTA " + cantidad + " L de AGUA");
         barco.repostarAgua(cantidad);
+        // Protocolo de salida: Exclusión mutua sobre el depósito de agua
+        imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " HA REPOSTADO" + cantidad + " L de AGUA");
+        mutexContenAgua.release();
     }
 
     /**
      * Rellena a la capacidad máxima los contenedores de petróleo. Utilizado por el repostador
      */
     public void reponerContenedores() {
+        // Protocolo de entrada
+        imprimirConTimestamp("El Repostador INTENTA REPONER los contenedores de petróleo");
+        try {
+            esperaRepostador.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // Acción: repostar todos los contenedores
+        imprimirConTimestamp("El Repostador REPOSTA los contenedores de petróleo");
         for (ContenedorPetroleo contenedorPetroleo : contenPetroleo.values())
             contenedorPetroleo.reponer();
+        imprimirConTimestamp("El Repostador HA REPOSTADO los contenedores de petróleo");
     }
 
     /**
@@ -143,4 +164,12 @@ public class ZonaRepostaje {
         return instancia;
     }
 
+    /**
+     * Imprime un mensaje con marca de tiempo por consola en una línea
+     *
+     * @param mensaje Mensaje a imprimir
+     */
+    private void imprimirConTimestamp(String mensaje) {
+        System.out.println("\t\t[" + System.currentTimeMillis() + "] " + mensaje);
+    }
 }

@@ -11,9 +11,9 @@ import java.util.List;
 
 public class Main {
 
-    private static final int NUM_BARCOS_ENTRADA_SIM = 2;    // Número de barcos de entrada creados para la simulación
-    private static final int NUM_BARCOS_SALIDA_SIM = 2;     // Número de barcos de salida creados para la simulación
-    private static final int NUM_BARCOS_MERCANTES_SIM = 2;  // Número de barcos mercantes creados para la simulación
+    private static final int NUM_BARCOS_ENTRADA_SIM = 0;    // Número de barcos de entrada creados para la simulación
+    private static final int NUM_BARCOS_SALIDA_SIM = 0;     // Número de barcos de salida creados para la simulación
+    private static final int NUM_BARCOS_MERCANTES_SIM = 0;  // Número de barcos mercantes creados para la simulación
     public static final int NUM_BARCOS_PETROLEROS_SIM = 5;  // Número de barcos petroleros creados para la simulación
 
     private static final int NUM_CONT_AZUCAR_BR = 12;       // Número de contenedores de azúcar que transporta un barco mercante
@@ -21,7 +21,7 @@ public class Main {
     private static final int NUM_CONT_SAL_BR = 20;          // Número de contenedores de sal que transporta un barco mercante
 
     private static final int CANT_INIC_DEP_PETR_BP = 0;     // Cantidad inicial del depósito de petróleo de los barcos petroleros
-    private static final int CANT_INIC_DEP_AGUA_BP = 0;     // Cantidad inicial del depósito de augua de los barcos petroleros
+    private static final int CANT_INIC_DEP_AGUA_BP = 4000;     // Cantidad inicial del depósito de augua de los barcos petroleros
 
     /**
      * Constructor por defecto. Inicia la simulación
@@ -35,6 +35,7 @@ public class Main {
      */
     private void simulacion() {
         List<Barco> barcos = new ArrayList<>();             // Colección de barcos simulados
+        List<BarcoPetrolero> barcosPetroleros = new ArrayList<>();   // Colección de barcos petroleros simulados
         List<Thread> hilos = new ArrayList<>();             // Colección de hilos instanciados
         int id = 1;                                         // Identificador asignado a cada barco
 
@@ -56,15 +57,17 @@ public class Main {
         id = 100;
         for (int i = 0; i < NUM_BARCOS_PETROLEROS_SIM; i++) {
             barcoPetrolero = new BarcoPetrolero(id, CANT_INIC_DEP_PETR_BP, CANT_INIC_DEP_AGUA_BP);
-
-            barcos.add(barcoPetrolero);
-            // Registra un contenedor privado de petroleo para el nuevo barco petrolero
-            if (ZonaRepostaje.recuperarInstancia().registrarContenedor(barcoPetrolero))
-                mostrarMensaje("[" + System.currentTimeMillis() + "] Contenedor de petróleo abierto para el barco "
-                        + barcoPetrolero.getIdentificador());
-
+            barcosPetroleros.add(barcoPetrolero);
             id++;
         }
+        // Registra los contenedores de petróleo para los barcos petroleros esperados
+        ZonaRepostaje.recuperarInstancia().registrarContenedores(barcosPetroleros);
+        mostrarMensaje("\t\t[" + System.currentTimeMillis() + "] Contenedores de petróleo registrados para barcos petroleros esperados");
+        // Registra los semáforos para cada barco petrolero esperado
+        ZonaRepostaje.recuperarInstancia().registrarSemaforos(barcosPetroleros);
+        mostrarMensaje("\t\t[" + System.currentTimeMillis() + "] Semáforos registrados para barcos petroleros esperados");
+        // Añade los barcos petroleros a la lista de barcos
+        barcos.addAll(barcosPetroleros);
 
         // CREACIÓN DE GRÚAS. Sus indices comenzarán a partir del 10 para distinguirlas
 
