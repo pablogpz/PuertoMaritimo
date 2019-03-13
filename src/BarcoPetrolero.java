@@ -6,14 +6,12 @@
  */
 public class BarcoPetrolero extends Barco {
 
-    /**
-     * Cantidad de petroleo en el depósito de petróleo
-     */
-    private int depositoPetroleo;
-    /**
-     * Cantidad de agua en el depósito de agua
-     */
-    private int depositoAgua;
+    private static final int LIMITE_PETROLEO = 3000;     // Cantidad de petróleo a recoger
+    private static final int LIMITE_AGUA = 5000;         // Cantidad de agua a recoger
+    private static final int CANTIDAD_REPOSTAJE = 1000;     // Cantidad que se repone de forma genérica
+
+    private int depositoPetroleo;           // Cantidad de petroleo en el depósito de petróleo
+    private int depositoAgua;               // Cantidad de agua en el depósito de agua
 
     /**
      * @param identificador
@@ -22,14 +20,36 @@ public class BarcoPetrolero extends Barco {
      */
     public BarcoPetrolero(int identificador, int depositoPetroleo, int depositoAgua) {
         super(identificador, ESTADO_BARCO.ENTRADA);
-        // TODO - implement BarcoPetrolero.BarcoPetrolero
+        this.depositoPetroleo = depositoPetroleo;
+        this.depositoAgua = depositoAgua;
     }
 
     /**
      * Un barco petrolero trata de entrar en el puerto, rellenar sus depósitos y salir del puerto
      */
     public void run() {
-        // TODO - implement BarcoPetrolero.run
+
+        ZonaRepostaje zonaRepostaje = ZonaRepostaje.recuperarInstancia();
+
+        // Protocolo común a los barcos de entrada
+        super.run();
+
+        // Protocolo específico
+        while (!estaLleno()) {
+            // En caso de que le falte agua repostará agua.
+            if (!aguaCompleto()) zonaRepostaje.repostarAgua(this, CANTIDAD_REPOSTAJE);
+            // En caso de que le falte petróleo repostará petróleo.
+            if (!petroleoCompleto()) zonaRepostaje.repostarPetroleo(this, CANTIDAD_REPOSTAJE);
+        }
+
+        // Ya no hay más cargamentos y abandona la zona de descarga
+        imprimirConTimestamp("El barco " + getIdentificador() + " abandona la zona de repostaje");
+
+        // Los barcos que abandonan la zona de descarga salen del puerto
+        setEstado(ESTADO_BARCO.SALIDA);
+        // Protocolo común a los barcos de salida
+        super.run();
+
     }
 
     /**
@@ -38,7 +58,7 @@ public class BarcoPetrolero extends Barco {
      * @param cantidad Cantidad a repostar de petróleo
      */
     public void repostarPetroleo(int cantidad) {
-        // TODO - implement BarcoPetrolero.repostarPetroleo
+        setDepositoPetroleo(getDepositoPetroleo() + cantidad);
     }
 
     /**
@@ -47,7 +67,7 @@ public class BarcoPetrolero extends Barco {
      * @param cantidad Cantidad a repostar de agua
      */
     public void repostarAgua(int cantidad) {
-        // TODO - implement BarcoPetrolero.repostarAgua
+        setDepositoAgua(getDepositoAgua() + cantidad);
     }
 
     /**
@@ -80,6 +100,50 @@ public class BarcoPetrolero extends Barco {
      */
     private void setDepositoAgua(int depositoAgua) {
         this.depositoAgua = depositoAgua;
+    }
+
+    /**
+     * Devuelve true en caso de que el barco haya llenado sus depositos. False en caso contrario.
+     *
+     * @return True si los depósitos del barco están llenos.
+     */
+    private boolean estaLleno() {
+        boolean resultado = false;
+        if (aguaCompleto() && petroleoCompleto()) {
+            resultado = true;
+        }
+        return resultado;
+    }
+
+    /**
+     * Devuelve true en caso de que el depósito de agua esté completo. False en caso contrario.
+     *
+     * @return True si el depósito de agua está lleno.
+     */
+    private boolean aguaCompleto() {
+        boolean resultado = false;
+        if (getDepositoAgua() == LIMITE_AGUA) resultado = true;
+        return resultado;
+    }
+
+    /**
+     * Devuelve true en caso de que el depósito de petróleo esté completo. False en caso contrario.
+     *
+     * @return True si el depósito de petróleo está lleno.
+     */
+    private boolean petroleoCompleto() {
+        boolean resultado = false;
+        if (getDepositoPetroleo() == LIMITE_PETROLEO) resultado = true;
+        return resultado;
+    }
+
+    /**
+     * Imprime un mensaje con marca de tiempo por consola en una línea
+     *
+     * @param mensaje Mensaje a imprimir
+     */
+    private void imprimirConTimestamp(String mensaje) {
+        System.out.println("\t\t[" + System.currentTimeMillis() + "] " + mensaje);
     }
 
 }
