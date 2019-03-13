@@ -6,25 +6,18 @@
  */
 public class ContenedorPetroleo {
 
-    /**
-     * Cantidad de petróleo en el contenedor
-     */
-    private int cantidad;
-    /**
-     * Capacidad máxima de petróleo en el contenedor
-     */
-    private int maxCapacidad;
+    private static final int CANTIDAD_MAX_PETROLEO = 1000;      // Cantidad de petróleo máxima por contenedor
 
-    public ContenedorPetroleo() {
-        // TODO - implement ContenedorPetroleo.ContenedorPetroleo
-    }
+    private int cantidad;               // Cantidad de petróleo en el contenedor
+    private int maxCapacidad;           // Capacidad máxima de petróleo en el contenedor
 
     /**
      * @param cantidad
      * @param capacidadMaxima
      */
     public ContenedorPetroleo(int cantidad, int capacidadMaxima) {
-        // TODO - implement ContenedorPetroleo.ContenedorPetroleo
+        this.cantidad = cantidad;
+        this.maxCapacidad = capacidadMaxima;
     }
 
     /**
@@ -34,15 +27,19 @@ public class ContenedorPetroleo {
      * @return Cantidad vaciada
      */
     public int vaciar(int cantidad) {
-        // TODO - implement ContenedorPetroleo.vaciar
-        return 0;
+        if (getCantidad() >= cantidad) {
+            setCantidad(getCantidad() - cantidad);
+            return cantidad;
+        } else {
+            return 0;
+        }
     }
 
     /**
      * Rellena el contenedor con la capacidad máxima de petróleo
      */
     public void reponer() {
-        // TODO - implement ContenedorPetroleo.reponer
+        setCantidad(CANTIDAD_MAX_PETROLEO);
     }
 
     /**
