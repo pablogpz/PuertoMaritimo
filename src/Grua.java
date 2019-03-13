@@ -8,7 +8,6 @@
 public class Grua implements Runnable {
 
     private Thread autoThread;              // Autothread
-
     /**
      * Identificador de la grúa
      */
@@ -44,7 +43,7 @@ public class Grua implements Runnable {
             // Las gruas deberán estar operativas mientras la plataforma esté operativa
             while (plataforma.getActiva())
                 plataforma.coger(this);
-            System.out.println("\t\t La grua " + getTipo() + " " + getIdentificador() + " ha terminado su trabajo");
+            System.out.println("\t\tLa grua " + getTipo() + " " + getIdentificador() + " ha terminado su trabajo");
         }
     }
 

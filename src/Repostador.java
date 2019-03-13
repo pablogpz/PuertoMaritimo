@@ -6,24 +6,28 @@
  */
 public class Repostador implements Runnable {
 
-    private Thread autoThread;
+    private Thread autoThread;          // Autothread
 
     public Repostador() {
-        // TODO - implement Repostador.Repostador
+        autoThread = new Thread(this);
+        autoThread.start();
     }
 
     /**
      * El repostador trata de repostar los contenedores de petróleo de la zona de repostaje
      */
     public void run() {
-        // TODO - implement Repostador.run
+        if (autoThread.equals(Thread.currentThread())) {
+            while (ZonaRepostaje.recuperarInstancia().getActiva())
+                repostar();
+            System.out.println("\t\tEl repostador ha terminado su trabajo");
+        }
     }
 
     /**
      * Reposta todos los contenedores de petróleo de la zona de repostaje dada a su capacidad máxima
      */
     private void repostar() {
-        // TODO - implement Repostador.repostar
+        ZonaRepostaje.recuperarInstancia().reponerContenedores();
     }
-
 }

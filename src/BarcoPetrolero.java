@@ -6,18 +6,19 @@
  */
 public class BarcoPetrolero extends Barco {
 
-    private static final int LIMITE_PETROLEO = 3000;     // Cantidad de petróleo a recoger
-    private static final int LIMITE_AGUA = 5000;         // Cantidad de agua a recoger
+    private static final int LIMITE_PETROLEO = 3000;        // Cantidad de petróleo a recoger
+    private static final int LIMITE_AGUA = 5000;            // Cantidad de agua a recoger
     private static final int CANTIDAD_REPOSTAJE = 1000;     // Cantidad que se repone de forma genérica
 
-    private int depositoPetroleo;           // Cantidad de petroleo en el depósito de petróleo
-    private int depositoAgua;               // Cantidad de agua en el depósito de agua
-
     /**
-     * @param identificador
-     * @param depositoPetroleo
-     * @param depositoAgua
+     * Cantidad de petroleo en el depósito de petróleo
      */
+    private int depositoPetroleo;
+    /**
+     * Cantidad de agua en el depósito de agua
+     */
+    private int depositoAgua;
+
     public BarcoPetrolero(int identificador, int depositoPetroleo, int depositoAgua) {
         super(identificador, ESTADO_BARCO.ENTRADA);
         this.depositoPetroleo = depositoPetroleo;
@@ -28,7 +29,6 @@ public class BarcoPetrolero extends Barco {
      * Un barco petrolero trata de entrar en el puerto, rellenar sus depósitos y salir del puerto
      */
     public void run() {
-
         ZonaRepostaje zonaRepostaje = ZonaRepostaje.recuperarInstancia();
 
         // Protocolo común a los barcos de entrada
@@ -36,20 +36,19 @@ public class BarcoPetrolero extends Barco {
 
         // Protocolo específico
         while (!estaLleno()) {
-            // En caso de que le falte agua repostará agua.
-            if (!aguaCompleto()) zonaRepostaje.repostarAgua(this, CANTIDAD_REPOSTAJE);
             // En caso de que le falte petróleo repostará petróleo.
             if (!petroleoCompleto()) zonaRepostaje.repostarPetroleo(this, CANTIDAD_REPOSTAJE);
+            // En caso de que le falte agua repostará agua.
+            if (!aguaCompleto()) zonaRepostaje.repostarAgua(this, CANTIDAD_REPOSTAJE);
         }
 
-        // Ya no hay más cargamentos y abandona la zona de descarga
+        // Ya no hay más cargamentos y abandona la zona de repostaje
         imprimirConTimestamp("El barco " + getIdentificador() + " abandona la zona de repostaje");
 
-        // Los barcos que abandonan la zona de descarga salen del puerto
+        // Los barcos petroleros que abandonan la zona de repostaje salen del puerto
         setEstado(ESTADO_BARCO.SALIDA);
         // Protocolo común a los barcos de salida
         super.run();
-
     }
 
     /**
@@ -71,59 +70,12 @@ public class BarcoPetrolero extends Barco {
     }
 
     /**
-     * Método accesor del atributo depositoPetroleo
-     */
-    public int getDepositoPetroleo() {
-        return depositoPetroleo;
-    }
-
-    /**
-     * Método accesor del atributo depositoAgua
-     */
-    public int getDepositoAgua() {
-        return depositoAgua;
-    }
-
-    /**
-     * Método modificador del atributo depositoPetroleo
-     *
-     * @param depositoPetroleo Nueva cantidad de petróleo en el depósito
-     */
-    private void setDepositoPetroleo(int depositoPetroleo) {
-        this.depositoPetroleo = depositoPetroleo;
-    }
-
-    /**
-     * Método modificador del atributo depositoAgua
-     *
-     * @param depositoAgua Nuevo cantidad de agua en el depósito
-     */
-    private void setDepositoAgua(int depositoAgua) {
-        this.depositoAgua = depositoAgua;
-    }
-
-    /**
      * Devuelve true en caso de que el barco haya llenado sus depositos. False en caso contrario.
      *
      * @return True si los depósitos del barco están llenos.
      */
     private boolean estaLleno() {
-        boolean resultado = false;
-        if (aguaCompleto() && petroleoCompleto()) {
-            resultado = true;
-        }
-        return resultado;
-    }
-
-    /**
-     * Devuelve true en caso de que el depósito de agua esté completo. False en caso contrario.
-     *
-     * @return True si el depósito de agua está lleno.
-     */
-    private boolean aguaCompleto() {
-        boolean resultado = false;
-        if (getDepositoAgua() == LIMITE_AGUA) resultado = true;
-        return resultado;
+        return aguaCompleto() && petroleoCompleto();
     }
 
     /**
@@ -132,9 +84,48 @@ public class BarcoPetrolero extends Barco {
      * @return True si el depósito de petróleo está lleno.
      */
     private boolean petroleoCompleto() {
-        boolean resultado = false;
-        if (getDepositoPetroleo() == LIMITE_PETROLEO) resultado = true;
-        return resultado;
+        return getDepositoPetroleo() == LIMITE_PETROLEO;
+    }
+
+    /**
+     * Devuelve true en caso de que el depósito de agua esté completo. False en caso contrario.
+     *
+     * @return True si el depósito de agua está lleno.
+     */
+    private boolean aguaCompleto() {
+        return getDepositoAgua() == LIMITE_AGUA;
+    }
+
+    /**
+     * Método accesor del atributo {@link BarcoPetrolero:depositoPetroleo}
+     */
+    public int getDepositoPetroleo() {
+        return depositoPetroleo;
+    }
+
+    /**
+     * Método accesor del atributo {@link BarcoPetrolero:depositoAgua}
+     */
+    public int getDepositoAgua() {
+        return depositoAgua;
+    }
+
+    /**
+     * Método modificador del atributo {@link BarcoPetrolero:depositoPetroleo}
+     *
+     * @param depositoPetroleo Nueva cantidad de petróleo en el depósito
+     */
+    private void setDepositoPetroleo(int depositoPetroleo) {
+        this.depositoPetroleo = depositoPetroleo;
+    }
+
+    /**
+     * Método modificador del atributo {@link BarcoPetrolero:depositoAgua}
+     *
+     * @param depositoAgua Nuevo cantidad de agua en el depósito
+     */
+    private void setDepositoAgua(int depositoAgua) {
+        this.depositoAgua = depositoAgua;
     }
 
     /**

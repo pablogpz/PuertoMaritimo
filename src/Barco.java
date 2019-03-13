@@ -60,7 +60,7 @@ public class Barco implements Runnable {
      *
      * @return Identificador del barco
      */
-    public int getIdentificador() {
+    protected int getIdentificador() {
         return identificador;
     }
 
@@ -69,7 +69,7 @@ public class Barco implements Runnable {
      *
      * @return Estado actual del barco
      */
-    public ESTADO_BARCO getEstado() {
+    protected ESTADO_BARCO getEstado() {
         return estado;
     }
 
@@ -78,7 +78,7 @@ public class Barco implements Runnable {
      *
      * @param estado Nuevo estado
      */
-    public void setEstado(ESTADO_BARCO estado) {
+    protected void setEstado(ESTADO_BARCO estado) {
         this.estado = estado;
     }
 

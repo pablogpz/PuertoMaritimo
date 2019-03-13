@@ -13,15 +13,6 @@ import java.util.concurrent.Semaphore;
 public class ZonaRepostaje {
 
     /**
-     * Cantidad inicial de los contenedores de petróleo registrados
-     */
-    private static final int CANT_INICIAL_CONT_PETR = 3000;
-    /**
-     * Capacidad máxima de los contenedores de petróleo registrados
-     */
-    private static final int CAP_MAX_CONT_PETR = 3000;
-
-    /**
      * Instancia Singleton de la zona de repostaje
      */
     private static ZonaRepostaje instancia = null;
@@ -30,6 +21,10 @@ public class ZonaRepostaje {
      * identificador un contenedor de petróleo privado
      */
     private Map<Integer, ContenedorPetroleo> contenPetroleo;
+    /**
+     * Bandera para indicar si la zona de repostaje está operativa
+     */
+    private boolean activa;
     /**
      * Semáforo de exclusión mutua sobre la colección de contenedores de petróleo
      */
@@ -53,22 +48,20 @@ public class ZonaRepostaje {
 
     private ZonaRepostaje() {
         contenPetroleo = new HashMap<>();
+        activa = true;
 
-        /** INICIALIZACION DE LOS SEMÁFOROS */
+        /* INICIALIZACION DE LOS SEMÁFOROS */
 
         mutexContenPetroleo = new Semaphore(1);
         mutexContenAgua = new Semaphore(1);
 
         esperaBarcos = new ArrayList<>(Main.NUM_BARCOS_PETROLEROS_SIM);
-        for (int i = 0; i < Main.NUM_BARCOS_PETROLEROS_SIM; i++)
-            esperaBarcos.add(new Semaphore(0));
-
         contenVacio = new ArrayList<>(Main.NUM_BARCOS_PETROLEROS_SIM);
-        for (int i = 0; i < Main.NUM_BARCOS_PETROLEROS_SIM; i++)
+        for (int i = 0; i < Main.NUM_BARCOS_PETROLEROS_SIM; i++) {
+            esperaBarcos.add(new Semaphore(0));
             contenVacio.add(new Semaphore(0));
-
+        }
         esperaRepostador = new Semaphore(0);
-
     }
 
     /**
@@ -81,7 +74,8 @@ public class ZonaRepostaje {
     public boolean registrarContenedor(Barco barco) {
         if (barco != null) {
             if (!contenPetroleo.containsKey(barco.getIdentificador())) {
-                contenPetroleo.put(barco.getIdentificador(), new ContenedorPetroleo(CANT_INICIAL_CONT_PETR, CAP_MAX_CONT_PETR));
+                contenPetroleo.put(barco.getIdentificador(), new ContenedorPetroleo(ContenedorPetroleo.CANT_INICIAL_CONT_PETROLEO,
+                        ContenedorPetroleo.CANTIDAD_MAX_PETROLEO));
                 return true;
             } else {
                 return false;
@@ -110,13 +104,33 @@ public class ZonaRepostaje {
      */
     public void repostarAgua(BarcoPetrolero barco, int cantidad) {
         // TODO - implement ZonaRepostaje.repostarAgua
+        barco.repostarAgua(cantidad);
     }
 
     /**
      * Rellena a la capacidad máxima los contenedores de petróleo. Utilizado por el repostador
      */
     public void reponerContenedores() {
-        // TODO - implement ZonaRepostaje.reponerContenedores
+        for (ContenedorPetroleo contenedorPetroleo : contenPetroleo.values())
+            contenedorPetroleo.reponer();
+    }
+
+    /**
+     * Método accesor del atributo {@link ZonaRepostaje:activa}
+     */
+    public boolean getActiva() {
+        return activa;
+    }
+
+    /**
+     * Método modificador del atributo {@link ZonaRepostaje:activa}
+     *
+     * @param activa Nuevo valor de la bandera
+     */
+    public void setActiva(boolean activa) {
+        this.activa = activa;
+        if (!getActiva())                   // Si la zona no está activa desbloqueamos al repostaador para que finalice
+            esperaRepostador.release();
     }
 
     /**
