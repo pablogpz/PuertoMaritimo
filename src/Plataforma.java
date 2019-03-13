@@ -172,9 +172,7 @@ public class Plataforma {
      * @return Instancia Singleton de la Plataforma
      */
     public synchronized static Plataforma recuperarInstancia() {
-        if (instancia != null)
-            return instancia;
-        else
+        if (instancia == null)
             instancia = new Plataforma();
 
         return instancia;

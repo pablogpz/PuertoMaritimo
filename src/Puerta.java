@@ -49,9 +49,7 @@ public class Puerta {
      * @return la instancia Singleton de la clase Puerta
      */
     public synchronized static Puerta recuperarInstancia() {
-        if (instancia != null)
-            return instancia;
-        else
+        if (instancia == null)
             instancia = new Puerta();
 
         return instancia;

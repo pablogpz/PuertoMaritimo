@@ -161,9 +161,7 @@ public class TorreControl {
      * @return Instancia Singleton de la TorreControl
      */
     public synchronized static TorreControl recuperarInstancia() {
-        if (instancia != null)
-            return instancia;
-        else
+        if (instancia == null)
             instancia = new TorreControl();
 
         return instancia;
