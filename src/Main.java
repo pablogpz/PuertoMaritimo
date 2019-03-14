@@ -11,9 +11,9 @@ import java.util.List;
 
 public class Main {
 
-    private static final int NUM_BARCOS_ENTRADA_SIM = 0;    // Número de barcos de entrada creados para la simulación
-    private static final int NUM_BARCOS_SALIDA_SIM = 0;     // Número de barcos de salida creados para la simulación
-    private static final int NUM_BARCOS_MERCANTES_SIM = 0;  // Número de barcos mercantes creados para la simulación
+    private static final int NUM_BARCOS_ENTRADA_SIM = 2;    // Número de barcos de entrada creados para la simulación
+    private static final int NUM_BARCOS_SALIDA_SIM = 2;     // Número de barcos de salida creados para la simulación
+    private static final int NUM_BARCOS_MERCANTES_SIM = 1;  // Número de barcos mercantes creados para la simulación
     public static final int NUM_BARCOS_PETROLEROS_SIM = 5;  // Número de barcos petroleros creados para la simulación
 
     private static final int NUM_CONT_AZUCAR_BR = 12;       // Número de contenedores de azúcar que transporta un barco mercante
@@ -35,7 +35,7 @@ public class Main {
      */
     private void simulacion() {
         List<Barco> barcos = new ArrayList<>();             // Colección de barcos simulados
-        List<BarcoPetrolero> barcosPetroleros = new ArrayList<>();   // Colección de barcos petroleros simulados
+        List<BarcoPetrolero> barcosPetroleros = new ArrayList<>();
         List<Thread> hilos = new ArrayList<>();             // Colección de hilos instanciados
         int id = 1;                                         // Identificador asignado a cada barco
 

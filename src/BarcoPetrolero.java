@@ -6,9 +6,10 @@
  */
 public class BarcoPetrolero extends Barco {
 
-    private static final int LIMITE_PETROLEO = 3000;        // Cantidad de petróleo a recoger
-    private static final int LIMITE_AGUA = 5000;            // Cantidad de agua a recoger
-    private static final int CANTIDAD_REPOSTAJE = 1000;     // Cantidad que se repone de forma genérica
+    private static final int LIMITE_PETROLEO = 3000;                // Cantidad de petróleo a recoger
+    private static final int LIMITE_AGUA = 5000;                    // Cantidad de agua a recoger
+    private static final int CANTIDAD_REPOSTAJE_PETROLEO = 1000;    // Cantidad que se repone de petróleo en cada invocación
+    private static final int CANTIDAD_REPOSTAJE_AGUA = 1000;        // Cantidad que se repone de agua en cada invocación
 
     /**
      * Cantidad de petroleo en el depósito de petróleo
@@ -35,12 +36,12 @@ public class BarcoPetrolero extends Barco {
         super.run();
 
         // Protocolo específico
-        zonaRepostaje.permisoRepostaje(this);           // Pide permiso para empezar a repostar
+        zonaRepostaje.permisoRepostaje(this);                   // Pide permiso para empezar a repostar
         while (!estaLleno()) {
             // En caso de que le falte petróleo repostará petróleo.
-            if (!petroleoCompleto()) zonaRepostaje.repostarPetroleo(this, CANTIDAD_REPOSTAJE);
+            if (!petroleoCompleto()) zonaRepostaje.repostarPetroleo(this, CANTIDAD_REPOSTAJE_PETROLEO);
             // En caso de que le falte agua repostará agua.
-            if (!aguaCompleto()) zonaRepostaje.repostarAgua(this, CANTIDAD_REPOSTAJE);
+            if (!aguaCompleto()) zonaRepostaje.repostarAgua(this, CANTIDAD_REPOSTAJE_AGUA);
         }
 
         // Ya no hay más cargamentos y abandona la zona de repostaje
@@ -55,9 +56,12 @@ public class BarcoPetrolero extends Barco {
      * Reposta una cantidad dada de petróleo
      *
      * @param cantidad Cantidad a repostar de petróleo
+     * @return Si realmente se repostó alguna cantidad. Devuelve Falso si el argumento 'cantidad' es 0, Verdadero
+     * en otro caso
      */
-    public void repostarPetroleo(int cantidad) {
+    public boolean repostarPetroleo(int cantidad) {
         setDepositoPetroleo(getDepositoPetroleo() + cantidad);
+        return cantidad != 0;
     }
 
     /**

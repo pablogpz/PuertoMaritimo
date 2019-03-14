@@ -25,6 +25,10 @@ public class ZonaRepostaje {
      */
     private int barcosEsperando;
     /**
+     * Contador de contenedores de petróleo vacíos esperando a ser repostados
+     */
+    private int contenRepostar;
+    /**
      * Bandera para indicar si la zona de repostaje está operativa
      */
     private boolean activa;
@@ -35,6 +39,10 @@ public class ZonaRepostaje {
      * Semáforo de exclusión mutua sobre el contador de barcos esperando para repostar
      */
     private Semaphore mutexBarcosEsperando;
+    /**
+     * Semáforo de exclusión mutua sobre el contador de contenedores a repostar
+     */
+    private Semaphore mutexContenRepostar;
     /**
      * Semáforo de exclusión mútua sobre el depósito de agua
      */
@@ -54,12 +62,15 @@ public class ZonaRepostaje {
 
     private ZonaRepostaje() {
         contenPetroleo = new HashMap<>();
+        barcosEsperando = 0;
+        contenRepostar = 0;
         activa = true;
 
         /* INICIALIZACION DE LOS SEMÁFOROS */
 
         mutexBarcosEsperando = new Semaphore(1);
         mutexContenAgua = new Semaphore(1);
+        mutexContenRepostar = new Semaphore(1);
 
         esperaBarcos = new HashMap<>(Main.NUM_BARCOS_PETROLEROS_SIM);
         contenVacio = new HashMap<>(Main.NUM_BARCOS_PETROLEROS_SIM);
@@ -97,7 +108,6 @@ public class ZonaRepostaje {
      */
     public void permisoRepostaje(BarcoPetrolero barco) {
         try {
-
             // Protocolo de entrada - 'barcosEsperando' : Adquirir exclusión mútua
             imprimirConTimestamp("El barco " + barco.getIdentificador() + " pide permiso para repostar");
             mutexBarcosEsperando.acquire();
@@ -106,13 +116,13 @@ public class ZonaRepostaje {
             // Protocolo de entrada - 'barcosEsperando' : Liberar exclusión mútua
             mutexBarcosEsperando.release();
 
-            if (getBarcosEsperando() == Main.NUM_BARCOS_PETROLEROS_SIM) {       // Comprueba si este barco es el último en llegar
+            if (getBarcosEsperando() == Main.NUM_BARCOS_PETROLEROS_SIM) {   // Comprueba si este barco es el último en llegar
                 imprimirConTimestamp("El barco " + barco.getIdentificador() + " DESBLOQUEA a los barcos petroleros");
-                for (Semaphore semaphore : esperaBarcos.values())               // Libera los semáforos de espera al resto de barcos
+                for (Semaphore semaphore : esperaBarcos.values())           // Libera los semáforos de espera al resto de barcos
                     semaphore.release();
             } else {
                 imprimirConTimestamp("El barco " + barco.getIdentificador() + " bloqueado para repostar");
-                esperaBarcos.get(barco.getIdentificador()).acquire();           // El barco se bloquea esperando al resto
+                esperaBarcos.get(barco.getIdentificador()).acquire();       // El barco se bloquea esperando al resto
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -126,8 +136,33 @@ public class ZonaRepostaje {
      * @param cantidad Cantidad de petróleo a repostar en el barco
      */
     public void repostarPetroleo(BarcoPetrolero barco, int cantidad) {
-        // TODO - implement ZonaRepostaje.repostarPetroleo
-        barco.repostarPetroleo(contenPetroleo.get(barco.getIdentificador()).vaciar(cantidad));
+        // Mientras se pueda repostar sigue repostando. Si no se repostó ninguna cantidad el contenedor está vacio
+        imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " INTENTA repostar " + cantidad + " L de PETROLEO");
+        if (!barco.repostarPetroleo(contenPetroleo.get(barco.getIdentificador()).vaciar(cantidad))) {
+            try {
+                // Protocolo de entrada - 'contenRepostar' : Adquirir exclusión mútua
+                imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " tiene VACÍO su CONTENEDOR de PETROLEO");
+                mutexContenRepostar.acquire();
+                // Acción - 'contenRepostar' : Incrementar en 1 el contador de contenedores a repostar
+                setContenRepostar(getContenRepostar() + 1);
+                // Protocolo de entrada - 'contenRepostar' : Liberar exclusión mútua
+                mutexContenRepostar.release();
+
+                // Comprueba si este barco fue el último en vaciar su contenedor de petróleo
+                if (getContenRepostar() == Main.NUM_BARCOS_PETROLEROS_SIM) {
+                    esperaRepostador.release();
+                    setContenRepostar(0);                                   // Reinicia el contador de contenedor a repostar
+                } else {
+                    imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " BLOQUEADO para REPOSTAR PETROLEO");
+                    contenVacio.get(barco.getIdentificador()).acquire();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " REPOSTA " + cantidad + " L de PETROLEO. Repostado : " +
+                    barco.getDepositoPetroleo() + "L");
+        }
     }
 
     /**
@@ -164,12 +199,16 @@ public class ZonaRepostaje {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // Acción: repostar todos los contenedores
-        imprimirConTimestamp("El Repostador REPOSTA los contenedores de petróleo");
-        for (ContenedorPetroleo contenedorPetroleo : contenPetroleo.values())
-            contenedorPetroleo.reponer();
-        // Protocolo de salida: Informar de la acción
-        imprimirConTimestamp("El Repostador HA REPOSTADO los contenedores de petróleo");
+        if (getActiva()) {                                              // Comprueba que la plataforma esté operativa
+            // Acción: Repostar todos los contenedores
+            imprimirConTimestamp("El Repostador REPOSTA los contenedores de petróleo");
+            for (ContenedorPetroleo contenedorPetroleo : contenPetroleo.values())
+                contenedorPetroleo.reponer();
+            // Protocolo de salida: Desbloquear a los barcos que quieren seguir repostando
+            imprimirConTimestamp("El Repostador HA REPOSTADO los contenedores de petróleo");
+            for (Semaphore semaphore : contenVacio.values())
+                semaphore.release();
+        }
     }
 
     /**
@@ -187,23 +226,40 @@ public class ZonaRepostaje {
     }
 
     /**
+     * Método accesor del atributo {@link ZonaRepostaje:contenRepostar}
+     */
+    public int getContenRepostar() {
+        return contenRepostar;
+    }
+
+    /**
      * Método modificador del atributo {@link ZonaRepostaje:activa}
      *
      * @param activa Nuevo valor de la bandera
      */
     public void setActiva(boolean activa) {
         this.activa = activa;
-        if (!getActiva())                   // Si la zona no está activa desbloqueamos al repostaador para que finalice
+        // Si la zona no está activa desbloqueamos al repostaador para que finalice
+        if (!getActiva())
             esperaRepostador.release();
     }
 
     /**
      * Método modificador del atributo {@link ZonaRepostaje:barcosEsperando}
      *
-     * @param barcosEsperando
+     * @param barcosEsperando Nuevo número de barcos esperando
      */
     private void setBarcosEsperando(int barcosEsperando) {
         this.barcosEsperando = barcosEsperando;
+    }
+
+    /**
+     * Método modificador del atributo {@link ZonaRepostaje:contenRepostar}
+     *
+     * @param contenRepostar Nuevo número de contenedores a repostar
+     */
+    public void setContenRepostar(int contenRepostar) {
+        this.contenRepostar = contenRepostar;
     }
 
     /**
