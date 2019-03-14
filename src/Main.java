@@ -21,7 +21,7 @@ public class Main {
     private static final int NUM_CONT_SAL_BR = 20;          // Número de contenedores de sal que transporta un barco mercante
 
     private static final int CANT_INIC_DEP_PETR_BP = 0;     // Cantidad inicial del depósito de petróleo de los barcos petroleros
-    private static final int CANT_INIC_DEP_AGUA_BP = 4000;     // Cantidad inicial del depósito de augua de los barcos petroleros
+    private static final int CANT_INIC_DEP_AGUA_BP = 0;     // Cantidad inicial del depósito de augua de los barcos petroleros
 
     /**
      * Constructor por defecto. Inicia la simulación

@@ -35,6 +35,7 @@ public class BarcoPetrolero extends Barco {
         super.run();
 
         // Protocolo específico
+        zonaRepostaje.permisoRepostaje(this);           // Pide permiso para empezar a repostar
         while (!estaLleno()) {
             // En caso de que le falte petróleo repostará petróleo.
             if (!petroleoCompleto()) zonaRepostaje.repostarPetroleo(this, CANTIDAD_REPOSTAJE);
@@ -44,7 +45,6 @@ public class BarcoPetrolero extends Barco {
 
         // Ya no hay más cargamentos y abandona la zona de repostaje
         imprimirConTimestamp("El barco " + getIdentificador() + " abandona la zona de repostaje");
-
         // Los barcos petroleros que abandonan la zona de repostaje salen del puerto
         setEstado(ESTADO_BARCO.SALIDA);
         // Protocolo común a los barcos de salida
