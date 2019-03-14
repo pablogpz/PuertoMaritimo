@@ -228,7 +228,7 @@ public class ZonaRepostaje {
     /**
      * Método accesor del atributo {@link ZonaRepostaje:contenRepostar}
      */
-    public int getContenRepostar() {
+    private int getContenRepostar() {
         return contenRepostar;
     }
 
@@ -258,7 +258,7 @@ public class ZonaRepostaje {
      *
      * @param contenRepostar Nuevo número de contenedores a repostar
      */
-    public void setContenRepostar(int contenRepostar) {
+    private void setContenRepostar(int contenRepostar) {
         this.contenRepostar = contenRepostar;
     }
 
