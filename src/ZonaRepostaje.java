@@ -180,7 +180,7 @@ public class ZonaRepostaje {
             e.printStackTrace();
         }
         // Acción: Repostar una cantidad de agua
-        imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " REPOSTA " + cantidad + " L de AGUA");
+        imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " REPOSTA AGUA");
         barco.repostarAgua(cantidad);
         // Protocolo de salida: Liberar exclusión mutua sobre el depósito de agua
         imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " HA REPOSTADO " + cantidad +

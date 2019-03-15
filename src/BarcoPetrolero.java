@@ -1,3 +1,8 @@
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
  * TODO Documentación clase BarcoPetrolero
  *
@@ -6,10 +11,10 @@
  */
 public class BarcoPetrolero extends Barco {
 
-    private static final int LIMITE_PETROLEO = 3000;                // Cantidad de petróleo a recoger
-    private static final int LIMITE_AGUA = 5000;                    // Cantidad de agua a recoger
-    private static final int CANTIDAD_REPOSTAJE_PETROLEO = 1000;    // Cantidad que se repone de petróleo en cada invocación
-    private static final int CANTIDAD_REPOSTAJE_AGUA = 1000;        // Cantidad que se repone de agua en cada invocación
+    private static final int LIMITE_PETROLEO = 3000;               // Cantidad de petróleo a recoger
+    private static final int LIMITE_AGUA = 5000;                   // Cantidad de agua a recoger
+    private static final int CANTIDAD_REPOSTAJE_PETROLEO = 1000;   // Cantidad que se repone de petróleo en cada invocación
+    private static final int CANTIDAD_REPOSTAJE_AGUA = 1000;       // Cantidad que se repone de agua en cada invocación
 
     /**
      * Cantidad de petroleo en el depósito de petróleo
@@ -20,10 +25,18 @@ public class BarcoPetrolero extends Barco {
      */
     private int depositoAgua;
 
+    /**
+     * Executor responsable del repostado concurrente de petróleo y agua
+     */
+    private Executor executor;
+
     public BarcoPetrolero(int identificador, int depositoPetroleo, int depositoAgua) {
         super(identificador, ESTADO_BARCO.ENTRADA);
         this.depositoPetroleo = depositoPetroleo;
         this.depositoAgua = depositoAgua;
+
+        // Dos hilos para dos procesos concurrentes
+        executor = Executors.newFixedThreadPool(2);
     }
 
     /**
@@ -36,13 +49,18 @@ public class BarcoPetrolero extends Barco {
         super.run();
 
         // Protocolo específico
-        zonaRepostaje.permisoRepostaje(this);                   // Pide permiso para empezar a repostar
-        while (!estaLleno()) {
-            // En caso de que le falte petróleo repostará petróleo.
-            if (!petroleoCompleto()) zonaRepostaje.repostarPetroleo(this, CANTIDAD_REPOSTAJE_PETROLEO);
-            // En caso de que le falte agua repostará agua.
-            if (!aguaCompleto()) zonaRepostaje.repostarAgua(this, CANTIDAD_REPOSTAJE_AGUA);
+        zonaRepostaje.permisoRepostaje(this);                    // Pide permiso para empezar a repostar
+        // Repostará petróleo
+        ((ThreadPoolExecutor) executor).submit(new ComporRepPetr(this));
+        // Repostará agua
+        ((ThreadPoolExecutor) executor).submit(new ComporRepAgua(this));
+        ((ThreadPoolExecutor) executor).shutdown();                     // Da de baja el executor
+        try {                                                           // Espera a que el barco termine de repostar para salir del puerto
+            ((ThreadPoolExecutor) executor).awaitTermination(1, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
 
         // Ya no hay más cargamentos y abandona la zona de repostaje
         imprimirConTimestamp("El barco " + getIdentificador() + " abandona la zona de repostaje");
@@ -78,7 +96,7 @@ public class BarcoPetrolero extends Barco {
      *
      * @return True si los depósitos del barco están llenos.
      */
-    private boolean estaLleno() {
+    public boolean estaLleno() {
         return aguaCompleto() && petroleoCompleto();
     }
 
@@ -87,7 +105,7 @@ public class BarcoPetrolero extends Barco {
      *
      * @return True si el depósito de petróleo está lleno.
      */
-    private boolean petroleoCompleto() {
+    public boolean petroleoCompleto() {
         return getDepositoPetroleo() == LIMITE_PETROLEO;
     }
 
@@ -96,7 +114,7 @@ public class BarcoPetrolero extends Barco {
      *
      * @return True si el depósito de agua está lleno.
      */
-    private boolean aguaCompleto() {
+    public boolean aguaCompleto() {
         return getDepositoAgua() == LIMITE_AGUA;
     }
 
@@ -139,6 +157,42 @@ public class BarcoPetrolero extends Barco {
      */
     private void imprimirConTimestamp(String mensaje) {
         System.out.println("\t\t[" + System.currentTimeMillis() + "] " + mensaje);
+    }
+
+    /**
+     * Clase que implementa el repostado de petróleo de barcos petroleros
+     */
+    private class ComporRepPetr implements Runnable {
+        private BarcoPetrolero barcoPetrolero;
+
+        public ComporRepPetr(BarcoPetrolero barcoPetrolero) {
+            this.barcoPetrolero = barcoPetrolero;
+        }
+
+        @Override
+        public void run() {
+            while (!petroleoCompleto()) {
+                ZonaRepostaje.recuperarInstancia().repostarPetroleo(barcoPetrolero, CANTIDAD_REPOSTAJE_PETROLEO);
+            }
+        }
+    }
+
+    /**
+     * Clase que implementa el repostado de agua de barcos petroleros
+     */
+    private class ComporRepAgua implements Runnable {
+        private BarcoPetrolero barcoPetrolero;
+
+        public ComporRepAgua(BarcoPetrolero barcoPetrolero) {
+            this.barcoPetrolero = barcoPetrolero;
+        }
+
+        @Override
+        public void run() {
+            while (!barcoPetrolero.aguaCompleto()) {
+                ZonaRepostaje.recuperarInstancia().repostarAgua(barcoPetrolero, CANTIDAD_REPOSTAJE_AGUA);
+            }
+        }
     }
 
 }

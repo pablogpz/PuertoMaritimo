@@ -20,7 +20,7 @@ public class Repostador implements Runnable {
         if (autoThread.equals(Thread.currentThread())) {
             while (ZonaRepostaje.recuperarInstancia().getActiva())
                 repostar();
-            System.out.println("\t\tEl repostador ha terminado su trabajo");
+            System.out.println("\t\tEl Repostador ha terminado su trabajo");
         }
     }
 
