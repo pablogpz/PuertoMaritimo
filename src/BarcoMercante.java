@@ -53,7 +53,7 @@ public class BarcoMercante extends Barco {
      *
      * @return cargamento El cargamento elegido al azar
      */
-    public TIPO_CARGAMENTO obtenerCargamentoAleatorio() {
+    private TIPO_CARGAMENTO obtenerCargamentoAleatorio() {
         ArrayList<TIPO_CARGAMENTO> cargamentosDisponibles = new ArrayList<>();
 
         // Inicializa la lista de posibilidades

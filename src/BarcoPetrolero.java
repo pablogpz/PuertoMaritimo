@@ -66,7 +66,6 @@ public class BarcoPetrolero extends Barco {
         imprimirConTimestamp("El barco " + getIdentificador() + " abandona la zona de repostaje");
         // Los barcos petroleros que abandonan la zona de repostaje salen del puerto
         setComporBarco(new ComporBarcoSalida());
-        // Protocolo común a los barcos de salida
         super.run();
     }
 
