@@ -1,5 +1,7 @@
 /**
- * Interfaz que modela el comportamiento común a barcos de entrada (entran en el puerto) y barcos de salida (salen del puerto). Por defecto un barco para poder realizar su acción ('accion()') debe pedir permiso para hacerla (mediante 'permiso()') y, una vez que la ha llevado a cabo, notificarlo mediante 'finPermiso()'
+ * Interfaz que modela el comportamiento común a barcos de entrada (entran en el puerto) y barcos de salida (salen del puerto).
+ * Por defecto un barco para poder realizar su acción {@link ComporBarco#permiso(Barco)} debe pedir permiso para hacerla
+ * {@link ComporBarco#accion(Barco)} y, una vez que la ha llevado a cabo, notificarlo {@link ComporBarco#finPermiso(Barco)}
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco
@@ -28,10 +30,19 @@ public interface ComporBarco {
     void accion(Barco barco);
 
     /**
-     * Describe la secuencia lógica de pasos para llevar a cabo la acción de la clase implementado esta interfaz. Por defecto se debe pedir permiso para realizar la acción, realizarla una vez obtenido el permiso y notificar el fin del permiso una vez realizada la acción
+     * Describe la secuencia lógica de pasos para llevar a cabo la acción de la clase implementado esta interfaz.
+     * Por defecto se debe pedir permiso para realizar la acción, realizarla una vez obtenido el permiso y notificar
+     * el fin del permiso una vez realizada la acción
      *
      * @param barco Barco que implementa la interfaz
      */
-    void comporBarco(Barco barco);
+    default void comporBarco(Barco barco) {
+        // Protocolo de entrada : Pide permiso para realizar la acción
+        permiso(barco);
+        // Realiza la acción
+        accion(barco);
+        // Protocolo de salida : Notifica el fin del permiso para realizar la acción finalizada
+        finPermiso(barco);
+    }
 
 }

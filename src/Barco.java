@@ -33,9 +33,6 @@ public class Barco implements Runnable {
      */
     @Override
     public void run() {
-        Puerta puerta = Puerta.recuperarInstancia();                    // Instancia Singleton de la puerta
-        TorreControl torreControl = TorreControl.recuperarInstancia();  // Instancia Singleton de la torre de control
-
         comporBarco.comporBarco(this);
     }
 
