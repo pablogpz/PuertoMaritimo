@@ -31,7 +31,7 @@ public class BarcoPetrolero extends Barco {
     private Executor executor;
 
     public BarcoPetrolero(int identificador, int depositoPetroleo, int depositoAgua) {
-        super(identificador, ESTADO_BARCO.ENTRADA);
+        super(identificador, new ComporBarcoEntrada());
         this.depositoPetroleo = depositoPetroleo;
         this.depositoAgua = depositoAgua;
 
@@ -65,7 +65,7 @@ public class BarcoPetrolero extends Barco {
         // Ya no hay más cargamentos y abandona la zona de repostaje
         imprimirConTimestamp("El barco " + getIdentificador() + " abandona la zona de repostaje");
         // Los barcos petroleros que abandonan la zona de repostaje salen del puerto
-        setEstado(ESTADO_BARCO.SALIDA);
+        setComporBarco(new ComporBarcoSalida());
         // Protocolo común a los barcos de salida
         super.run();
     }
@@ -161,6 +161,9 @@ public class BarcoPetrolero extends Barco {
 
     /**
      * Clase que implementa el repostado de petróleo de barcos petroleros
+     *
+     * @author Juan Pablo García Plaza Pérez
+     * @author José Ángel Concha Carrasco
      */
     private class ComporRepPetr implements Runnable {
         private BarcoPetrolero barcoPetrolero;
@@ -179,6 +182,9 @@ public class BarcoPetrolero extends Barco {
 
     /**
      * Clase que implementa el repostado de agua de barcos petroleros
+     *
+     * @author Juan Pablo García Plaza Pérez
+     * @author José Ángel Concha Carrasco
      */
     private class ComporRepAgua implements Runnable {
         private BarcoPetrolero barcoPetrolero;

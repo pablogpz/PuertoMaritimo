@@ -11,7 +11,7 @@ public class Grua implements Runnable {
     /**
      * Identificador de la grúa
      */
-    private int identificador;
+    private final int identificador;
     /**
      * Tipo de cargamento con el que opera la grúa
      */

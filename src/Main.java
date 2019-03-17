@@ -11,9 +11,9 @@ import java.util.List;
 
 public class Main {
 
-    private static final int NUM_BARCOS_ENTRADA_SIM = 0;    // Número de barcos de entrada creados para la simulación
-    private static final int NUM_BARCOS_SALIDA_SIM = 0;     // Número de barcos de salida creados para la simulación
-    private static final int NUM_BARCOS_MERCANTES_SIM = 0;  // Número de barcos mercantes creados para la simulación
+    private static final int NUM_BARCOS_ENTRADA_SIM = 3;    // Número de barcos de entrada creados para la simulación
+    private static final int NUM_BARCOS_SALIDA_SIM = 3;     // Número de barcos de salida creados para la simulación
+    private static final int NUM_BARCOS_MERCANTES_SIM = 1;  // Número de barcos mercantes creados para la simulación
     public static final int NUM_BARCOS_PETROLEROS_SIM = 5;  // Número de barcos petroleros creados para la simulación
 
     private static final int NUM_CONT_AZUCAR_BR = 12;       // Número de contenedores de azúcar que transporta un barco mercante
@@ -42,11 +42,11 @@ public class Main {
         // CREACIÓN DE BARCOS
 
         for (int i = 0; i < NUM_BARCOS_ENTRADA_SIM; i++) {  // Crea los barcos que quieren entrar
-            barcos.add(new Barco(id, ESTADO_BARCO.ENTRADA));
+            barcos.add(new Barco(id, new ComporBarcoEntrada()));
             id++;
         }
         for (int i = 0; i < NUM_BARCOS_SALIDA_SIM; i++) {   // Crea los barcos que quieren salir
-            barcos.add(new Barco(id, ESTADO_BARCO.SALIDA));
+            barcos.add(new Barco(id, new ComporBarcoSalida()));
             id++;
         }
         // Creación e incorporación de los barcos mercantes. Llevarán identificadores negativos para distinguirlos.

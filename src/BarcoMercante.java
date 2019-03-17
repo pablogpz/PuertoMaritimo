@@ -25,7 +25,7 @@ public class BarcoMercante extends Barco {
      * @param depositoSal    Cantidad de cargamentos de sal
      */
     public BarcoMercante(int identificador, int depositoAzucar, int depositoHarina, int depositoSal) {
-        super(identificador, ESTADO_BARCO.ENTRADA);
+        super(identificador, new ComporBarcoEntrada());
         this.depositoAzucar = depositoAzucar;
         this.depositoHarina = depositoHarina;
         this.depositoSal = depositoSal;
@@ -120,7 +120,7 @@ public class BarcoMercante extends Barco {
      *
      * @param depositoAzucar Nueva cantidad del atributo depositoAzucar
      */
-    public synchronized void setDepositoAzucar(int depositoAzucar) {
+    private synchronized void setDepositoAzucar(int depositoAzucar) {
         this.depositoAzucar = depositoAzucar;
     }
 
@@ -129,7 +129,7 @@ public class BarcoMercante extends Barco {
      *
      * @param depositoHarina Nueva cantidad del atributo depositoHarina
      */
-    public synchronized void setDepositoHarina(int depositoHarina) {
+    private synchronized void setDepositoHarina(int depositoHarina) {
         this.depositoHarina = depositoHarina;
     }
 
@@ -138,7 +138,7 @@ public class BarcoMercante extends Barco {
      *
      * @param depositoSal Nueva cantidad del atributo depositoSal
      */
-    public synchronized void setDepositoSal(int depositoSal) {
+    private synchronized void setDepositoSal(int depositoSal) {
         this.depositoSal = depositoSal;
     }
 
