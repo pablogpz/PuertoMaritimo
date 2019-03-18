@@ -41,7 +41,6 @@ public class Main {
         Executor executor = Executors.newCachedThreadPool();// Executor para ejecutar los barcos según se instancien
         int id = 1;                                         // Identificador asignado a cada barco
 
-
         // CREACIÓN DE BARCOS
 
         for (int i = 0; i < NUM_BARCOS_ENTRADA_SIM; i++) {  // Crea los barcos que quieren entrar
