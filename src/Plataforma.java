@@ -1,6 +1,4 @@
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.SynchronousQueue;
 
 /**
  * Implementa el patrón de diseño Singleton
@@ -16,32 +14,24 @@ public class Plataforma {
      */
     private static Plataforma instancia = null;
     /**
-     * Cargamento ocupando la plataforma
-     */
-    private TIPO_CARGAMENTO almacenado;
-    /**
      * Bandera para indicar si la plataforma está operativa
      */
     private boolean activa;
 
-    private Lock monitor;
-    private Condition esperaAzucar;                 // Variable de espera para las grúas de Azúcar
-    private Condition esperaHarina;                 // Variable de espera para las grúas de Harina
-    private Condition esperaSal;                    // Variable de espera para las grúas de Sal
-    private Condition esperaMercante;               // Varible de espera para los barcos mercantes
+    private SynchronousQueue<TIPO_CARGAMENTO> esperaAzucar;         // Cola síncrona para bloquear a la grúa de AZUCAR
+    private SynchronousQueue<TIPO_CARGAMENTO> esperaHarina;         // Cola síncrona para bloquear a la grúa de HARINA
+    private SynchronousQueue<TIPO_CARGAMENTO> esperaSal;            // Cola síncrona para bloquear a la grúa de SAL
 
     /**
      * Constructor por defecto
      */
     private Plataforma() {
         activa = true;
-        almacenado = null;
-        monitor = new ReentrantLock(true);
 
-        esperaAzucar = monitor.newCondition();
-        esperaHarina = monitor.newCondition();
-        esperaSal = monitor.newCondition();
-        esperaMercante = monitor.newCondition();
+        // Todas las colas síncronas tienen política de justicia FIFO
+        esperaAzucar = new SynchronousQueue<>(true);
+        esperaHarina = new SynchronousQueue<>(true);
+        esperaSal = new SynchronousQueue<>(true);
     }
 
     /**
@@ -51,38 +41,29 @@ public class Plataforma {
      * @param cargamento Cargamento que deposita en la plataforma
      */
     public void poner(BarcoMercante barco, TIPO_CARGAMENTO cargamento) {
-        monitor.lock();
+        // Notifica un intento de poner un cargamento en la plataforma
+        imprimirConTimestamp("El barco mercante " + barco.getIdentificador() + " intenta añadir un cargamento de "
+                + cargamento + " a la plataforma");
         try {
-            // Protocolo de entrada
-            while (getAlmacenado() != null) {
-                imprimirConTimestamp("El barco mercante " + barco.getIdentificador() + " está bloqueado por la plataforma");
-                esperaMercante.await();
-            }
-            // Acción
-            setAlmacenado(cargamento);
-            imprimirConTimestamp("El barco mercante " + barco.getIdentificador() + " añade un cargamento de "
-                    + cargamento + " a la plataforma");
-            // Protocolo de salida: Desbloquea únicamente a la grúa bloqueada que corresponda con el cargamento depositado
-            switch (cargamento) {
+            switch (cargamento) {                                   // Determina a qué cola síncrona debe asignarse cada cargamento
                 case AZUCAR:
-                    esperaAzucar.signal();
+                    esperaAzucar.put(cargamento);
                     imprimirConTimestamp("Se ha desbloqueado G-azúcar");
                     break;
                 case HARINA:
-                    esperaHarina.signal();
+                    esperaHarina.put(cargamento);
                     imprimirConTimestamp("Se ha desbloqueado G-harina");
                     break;
                 case SAL:
-                    esperaSal.signal();
+                    esperaSal.put(cargamento);
                     imprimirConTimestamp("Se ha desbloqueado G-sal");
             }
-            imprimirConTimestamp("El barco mercante " + barco.getIdentificador() +
-                    " finalmente ha añadido un cargamento a la plataforma. Cargamentos restantes: " + barco.getCargamentosRestantes());
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            monitor.unlock();
         }
+        // Notifica el éxito de poner un cargamento en la plataforma
+        imprimirConTimestamp("El barco mercante " + barco.getIdentificador() +
+                " finalmente ha añadido un cargamento a la plataforma. Cargamentos restantes: " + barco.getCargamentosRestantes());
     }
 
     /**
@@ -91,44 +72,41 @@ public class Plataforma {
      * @param grua Grua que intenta coger de la plataforma
      */
     public void coger(Grua grua) {
-        monitor.lock();
+        // Notifica la voluntad de una grúa de coger un cargamento
+        imprimirConTimestamp("La grúa (" + grua.getTipo() + ") " + grua.getIdentificador() + " está bloqueada");
         try {
-            // Protocolo de entrada: Se bloquea si la plataforma no está activa o no hay ningun cargamento en la plataforma o el cargamento no coincide con la grua
-            while (getActiva() && (getAlmacenado() == null || getAlmacenado() != grua.getTipo())) {
-                imprimirConTimestamp("La grúa (" + grua.getTipo() + ") " + grua.getIdentificador() + " está bloqueada");
-                switch (grua.getTipo()) {
-                    case AZUCAR:
-                        esperaAzucar.await();
-                        break;
-                    case HARINA:
-                        esperaHarina.await();
-                        break;
-                    case SAL:
-                        esperaSal.await();
-                }
+            switch (grua.getTipo()) {                               // Determina de qué cola síncrona coger el cargamento según el tipo de grúa
+                case AZUCAR:
+                    esperaAzucar.take();
+                    break;
+                case HARINA:
+                    esperaHarina.take();
+                    break;
+                case SAL:
+                    esperaSal.take();
             }
-            if (getActiva()) {  // Comprueba que la plataforma sigue operativa al retormar el control
-                // Acción: consiste en quitar el cargamento de la plataforma
-                setAlmacenado(null);
-                imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " vacía la plataforma");
-                // Protocolo de salida: consiste en notificárselo al barco mercante por si puediese estar bloqueado
-                esperaMercante.signal();
-                imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " finalmente ha vaciado la plataforma");
-            }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            monitor.unlock();
         }
+        // Notifica el éxito de la grúa de coger un cargamento de la plataforma
+        if (getActiva())                                            // Comprueba que la plataforma esté operativa
+            imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " vacía la plataforma");
     }
 
     /**
-     * Método accesor del atributo {@link Plataforma:almacenado}
-     *
-     * @return El cargamento almacenado
+     * Termina la ejecución de las grúas {@link Grua} asociadas a la plataforma de manera que el proograma no quede bloqueado por
+     * esperar indefinidadmente otro cargamento
      */
-    public TIPO_CARGAMENTO getAlmacenado() {
-        return almacenado;
+    public void apagarGruas() {
+        setActiva(false);                                           // Apaga la plataforma
+        try {
+            // Pone un elemento más para desbloquear a las grúas esperando y que se apaguen también
+            esperaAzucar.put(TIPO_CARGAMENTO.AZUCAR);
+            esperaHarina.put(TIPO_CARGAMENTO.HARINA);
+            esperaSal.put(TIPO_CARGAMENTO.SAL);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -141,31 +119,12 @@ public class Plataforma {
     }
 
     /**
-     * Método modificador del atributo {@link Plataforma:almacenado}
-     *
-     * @param almacenado Nuevo cargamento en la plataforma
-     */
-    private void setAlmacenado(TIPO_CARGAMENTO almacenado) {
-        this.almacenado = almacenado;
-    }
-
-    /**
      * Método modificador del atributo {@link Plataforma:activa}
      *
      * @param activa Nuevo estado de la plataforma
      */
     public void setActiva(Boolean activa) {
-        monitor.lock();
-        try {
-            this.activa = activa;
-            if (!getActiva()) {             // Desbloquea a las grúas bloqueadas esperando por cargamentos
-                esperaAzucar.signal();
-                esperaHarina.signal();
-                esperaSal.signal();
-            }
-        } finally {
-            monitor.unlock();
-        }
+        this.activa = activa;
     }
 
     /**

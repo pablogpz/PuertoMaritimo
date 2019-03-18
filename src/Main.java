@@ -92,7 +92,7 @@ public class Main {
         }
 
         // Detiene las grúas bloqueadas esperando por más cargamentos y el repostador esperando a repostar los contenedores
-        Plataforma.recuperarInstancia().setActiva(false);
+        Plataforma.recuperarInstancia().apagarGruas();
         ZonaRepostaje.recuperarInstancia().setActiva(false);
 
         mostrarMensaje("FIN del HILO PRINCIPAL");
