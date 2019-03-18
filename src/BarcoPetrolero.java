@@ -63,7 +63,6 @@ public class BarcoPetrolero extends Barco {
             e.printStackTrace();
         }
 
-
         // Ya no hay más cargamentos y abandona la zona de repostaje
         imprimirConTimestamp("El barco " + getIdentificador() + " abandona la zona de repostaje");
         // Los barcos petroleros que abandonan la zona de repostaje salen del puerto
