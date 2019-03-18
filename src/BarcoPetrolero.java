@@ -51,11 +51,18 @@ public class BarcoPetrolero extends Barco {
         // Protocolo específico
         zonaRepostaje.permisoRepostaje(this);                    // Pide permiso para empezar a repostar
         // Repostará petróleo
-        ((ThreadPoolExecutor) executor).submit(() ->
-                ZonaRepostaje.recuperarInstancia().repostarPetroleo(this, CANTIDAD_REPOSTAJE_PETROLEO));
+        ((ThreadPoolExecutor) executor).submit(() -> {
+            while (!petroleoCompleto())
+                ZonaRepostaje.recuperarInstancia().repostarPetroleo(this, CANTIDAD_REPOSTAJE_PETROLEO);
+
+        });
         // Repostará agua
-        ((ThreadPoolExecutor) executor).submit(() ->
-                ZonaRepostaje.recuperarInstancia().repostarAgua(this, CANTIDAD_REPOSTAJE_AGUA));
+        ((ThreadPoolExecutor) executor).submit(() -> {
+            while (!aguaCompleto())
+                ZonaRepostaje.recuperarInstancia().repostarAgua(this, CANTIDAD_REPOSTAJE_AGUA);
+
+        });
+
         ((ThreadPoolExecutor) executor).shutdown();                     // Da de baja el executor
         try {                                                           // Espera a que el barco termine de repostar para salir del puerto
             ((ThreadPoolExecutor) executor).awaitTermination(1, TimeUnit.DAYS);
@@ -64,7 +71,7 @@ public class BarcoPetrolero extends Barco {
         }
 
         // Ya no hay más cargamentos y abandona la zona de repostaje
-        imprimirConTimestamp("El barco " + getIdentificador() + " abandona la zona de repostaje");
+        imprimirConTimestamp("El barco petrolero " + getIdentificador() + " abandona la zona de repostaje");
         // Los barcos petroleros que abandonan la zona de repostaje salen del puerto
         setComporBarco(new ComporBarcoSalida());
         super.run();
