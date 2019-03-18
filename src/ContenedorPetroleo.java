@@ -7,7 +7,7 @@
 public class ContenedorPetroleo {
 
     public static final int CANT_INICIAL_CONT_PETROLEO = 1000;  // Cantidad inicial de los contenedores de petróleo registrados
-    public static final int CANTIDAD_MAX_PETROLEO = 1000;       // Cantidad de petróleo máxima por contenedor
+    public static final int CANTIDAD_MAX_CONT_PETROLEO = 1000;  // Cantidad de petróleo máxima por contenedor
 
     /**
      * Cantidad de petróleo en el contenedor

@@ -65,9 +65,6 @@ public class Main {
         // Registra los contenedores de petróleo para los barcos petroleros esperados
         ZonaRepostaje.recuperarInstancia().registrarContenedores(barcosPetroleros);
         mostrarMensaje("\t\t[" + System.currentTimeMillis() + "] Contenedores de petróleo registrados para barcos petroleros esperados");
-        // Registra los semáforos para cada barco petrolero esperado
-        ZonaRepostaje.recuperarInstancia().registrarSemaforos(barcosPetroleros);
-        mostrarMensaje("\t\t[" + System.currentTimeMillis() + "] Semáforos registrados para barcos petroleros esperados");
         // Ejecuta los barcos petroleros instanciados
         for (BarcoPetrolero petrolero : barcosPetroleros)
             ((ThreadPoolExecutor) executor).submit(petrolero);
@@ -77,10 +74,6 @@ public class Main {
         new Grua(10, TIPO_CARGAMENTO.AZUCAR);
         new Grua(11, TIPO_CARGAMENTO.HARINA);
         new Grua(12, TIPO_CARGAMENTO.SAL);
-
-        // CREACIÓN DEL REPOSTADOR
-
-        new Repostador();
 
         // Espera a que terminen todos los hilos de barcos
 
@@ -93,7 +86,6 @@ public class Main {
 
         // Detiene las grúas bloqueadas esperando por más cargamentos y el repostador esperando a repostar los contenedores
         Plataforma.recuperarInstancia().apagarGruas();
-        ZonaRepostaje.recuperarInstancia().setActiva(false);
 
         mostrarMensaje("FIN del HILO PRINCIPAL");
     }
