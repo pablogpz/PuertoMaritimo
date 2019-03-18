@@ -1,6 +1,9 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Clase principal del proyecto
@@ -34,24 +37,24 @@ public class Main {
      * Realiza la simulación del proyecto
      */
     private void simulacion() {
-        List<Barco> barcos = new ArrayList<>();             // Colección de barcos simulados
         List<BarcoPetrolero> barcosPetroleros = new ArrayList<>();
-        List<Thread> hilos = new ArrayList<>();             // Colección de hilos instanciados
+        Executor executor = Executors.newCachedThreadPool();// Executor para ejecutar los barcos según se instancien
         int id = 1;                                         // Identificador asignado a cada barco
+
 
         // CREACIÓN DE BARCOS
 
         for (int i = 0; i < NUM_BARCOS_ENTRADA_SIM; i++) {  // Crea los barcos que quieren entrar
-            barcos.add(new Barco(id, new ComporBarcoEntrada()));
+            ((ThreadPoolExecutor) executor).submit(new Barco(id, new ComporBarcoEntrada()));
             id++;
         }
         for (int i = 0; i < NUM_BARCOS_SALIDA_SIM; i++) {   // Crea los barcos que quieren salir
-            barcos.add(new Barco(id, new ComporBarcoSalida()));
+            ((ThreadPoolExecutor) executor).submit(new Barco(id, new ComporBarcoSalida()));
             id++;
         }
         // Creación e incorporación de los barcos mercantes. Llevarán identificadores negativos para distinguirlos.
         for (int i = -1; i >= -NUM_BARCOS_MERCANTES_SIM; i--)
-            barcos.add(new BarcoMercante(i, NUM_CONT_AZUCAR_BR, NUM_CONT_HARINA_BR, NUM_CONT_SAL_BR));
+            ((ThreadPoolExecutor) executor).submit(new BarcoMercante(i, NUM_CONT_AZUCAR_BR, NUM_CONT_HARINA_BR, NUM_CONT_SAL_BR));
         // Creación e incorporación de los barcos petroleros. Llevarán identificadores mayores o iguales que 100
         BarcoPetrolero barcoPetrolero;
         id = 100;
@@ -66,8 +69,9 @@ public class Main {
         // Registra los semáforos para cada barco petrolero esperado
         ZonaRepostaje.recuperarInstancia().registrarSemaforos(barcosPetroleros);
         mostrarMensaje("\t\t[" + System.currentTimeMillis() + "] Semáforos registrados para barcos petroleros esperados");
-        // Añade los barcos petroleros a la lista de barcos
-        barcos.addAll(barcosPetroleros);
+        // Ejecuta los barcos petroleros instanciados
+        for (BarcoPetrolero petrolero : barcosPetroleros)
+            ((ThreadPoolExecutor) executor).submit(petrolero);
 
         // CREACIÓN DE GRÚAS. Sus indices comenzarán a partir del 10 para distinguirlas
 
@@ -79,23 +83,13 @@ public class Main {
 
         new Repostador();
 
-        // EJECUCIÓN DE LA SIMULACIÓN
-
-        Collections.shuffle(barcos);                        // Distribuye el orden de los barcos
-        for (Barco barco : barcos) {
-            Thread hiloBarco = new Thread(barco);
-            hiloBarco.start();                              // Lanza cada hilo
-            hilos.add(hiloBarco);                           // Guarda el hilo instanciado y lanzado
-        }
-
         // Espera a que terminen todos los hilos de barcos
 
-        for (Thread hilo : hilos) {
-            try {
-                hilo.join();
-            } catch (InterruptedException e) {
-                mostrarMensaje(e.getMessage());
-            }
+        ((ThreadPoolExecutor) executor).shutdown();
+        try {
+            ((ThreadPoolExecutor) executor).awaitTermination(1, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         // Detiene las grúas bloqueadas esperando por más cargamentos y el repostador esperando a repostar los contenedores
