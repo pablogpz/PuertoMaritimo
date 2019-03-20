@@ -97,7 +97,7 @@ public class ZonaRepostaje {
     public void registrarContenedores(Collection<? extends BarcoPetrolero> barcosPetroleros) {
         for (BarcoPetrolero barcosPetrolero : barcosPetroleros)
             contenPetroleo.put(barcosPetrolero.getIdentificador(), new ContenedorPetroleo(ContenedorPetroleo.CANT_INICIAL_CONT_PETROLEO,
-                    ContenedorPetroleo.CANTIDAD_MAX_PETROLEO));
+                    ContenedorPetroleo.CANTIDAD_MAX_CONT_PETROLEO));
     }
 
     /**
@@ -180,7 +180,6 @@ public class ZonaRepostaje {
             e.printStackTrace();
         }
         // Acción: Repostar una cantidad de agua
-        imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " REPOSTA AGUA");
         barco.repostarAgua(cantidad);
         // Protocolo de salida: Liberar exclusión mutua sobre el depósito de agua
         imprimirConTimestamp("El barco petrolero " + barco.getIdentificador() + " HA REPOSTADO " + cantidad +
