@@ -40,7 +40,7 @@ public class ZonaRepostaje {
         contenPetroleo = new HashMap<>();
 
         esperaBarcos = new CountDownLatch(Main.NUM_BARCOS_PETROLEROS_SIM);
-        contenVacios = new CyclicBarrier(Main.NUM_BARCOS_PETROLEROS_SIM, new Repostador());
+        contenVacios = new CyclicBarrier(Main.NUM_BARCOS_PETROLEROS_SIM, this::reponerContenedores);
         mutexContenAgua = new Semaphore(1);
     }
 
@@ -117,9 +117,9 @@ public class ZonaRepostaje {
     }
 
     /**
-     * Rellena a la capacidad máxima los contenedores de petróleo. Utilizado por el repostador
+     * Rellena a la capacidad máxima los contenedores de petróleo
      */
-    public void reponerContenedores() {
+    private void reponerContenedores() {
         imprimirConTimestamp("El Repostador REPOSTA los contenedores de petróleo");
         for (ContenedorPetroleo contenedorPetroleo : contenPetroleo.values())
             contenedorPetroleo.reponer();
