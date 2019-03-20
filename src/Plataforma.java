@@ -1,8 +1,10 @@
 import java.util.concurrent.SynchronousQueue;
 
 /**
- * Implementa el patrón de diseño Singleton
- * // TODO Documentar clase Plataforma
+ * Implementa el patrón de diseño Singleton. Esta entidad encapsula toda la lógica de sincronización relacionada con el
+ * paso 6. Los barcos mercantes deben descargar sus contenedores en una plataforma, que solo puede albergar un contenedor,
+ * solo uno a la vez. Los contenedores serán entonces recogidos por su grúa pertinente. Las grúas siempre intentan coger
+ * más contenedores hasta que son apagadas y solo pueden coger un contenedor si está en la plataforma
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco

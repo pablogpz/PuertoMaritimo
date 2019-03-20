@@ -1,6 +1,6 @@
 /**
- * Implementa el partrón de diseño Singleton
- * // TODO Documentar clase Puerta
+ * Implementa el partrón de diseño Singleton. Representa la puerta del puerto que comparten todos los barcos que
+ * quieren interactuar con el puerto. Permite entrar y salir por ella, reflejándolo en consola
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco
@@ -22,9 +22,10 @@ public class Puerta {
     }
 
     /**
-     * // TODO Documenar método entrar()
+     * Muestra por consola la entrada del barco pasado por argumento. Imprime el mensaje {@code NUM_PETICIONES} para detectar
+     * errores en el manejo concurrente de los permisos de entrada y salida
      *
-     * @param barco
+     * @param barco Barco que entra
      */
     public void entrar(Barco barco) {
         String mensaje = "[" + System.currentTimeMillis() + "] El barco con ID: " + barco.getIdentificador() + " entra";
@@ -34,9 +35,10 @@ public class Puerta {
     }
 
     /**
-     * // TODO Documentar método salir()
+     * Muestra por consola la salida del barco pasado por argumento. Imprime el mensaje {@code NUM_PETICIONES} para detectar
+     * errores en el manejo concurrente de los permisos de entrada y salida
      *
-     * @param barco
+     * @param barco Barco que quiere salir
      */
     public void salir(Barco barco) {
         String mensaje = "[" + System.currentTimeMillis() + "] El barco con ID: " + barco.getIdentificador() + " sale";

@@ -3,8 +3,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Implementa el partrón de diseño Singleton
- * // TODO Documentar clase TorreControl
+ * Implementa el partrón de diseño Singleton. Sirve de entidad en la que encapsular toda la sincronización de barcos que
+ * quieren entrar y salir por la puerta del puerto. Se permite la entrada y salida concurrente mientras circulen en el mismo sentido.
+ * Existe preferencia a los barcos de salida y se sigue una política de justicia FIFO en ambos sentidos. Un barco de entrada
+ * puede entrar si no hay ningún barco saliendo ni esperando salir, mientas que un barco de salida puede salir si no hay
+ * ningún barco entrando
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco

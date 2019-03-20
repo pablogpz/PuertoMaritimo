@@ -1,5 +1,7 @@
 /**
- * // TODO Documentación clase Barco
+ * Clase que modela un barco genérico que puede realizar dos comportamientos distintos: entrar o salir por la puerta
+ * del puerto. El comportamiento puede ser cambiado en tiempo de ejecución (Implementado mediante Strategy Pattern).
+ * Un barco genérico tiene un identificador inmutable y un comportamiento que seguir al invocarlo como hilo
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco
@@ -29,7 +31,7 @@ public class Barco implements Runnable {
     }
 
     /**
-     * TODO Documentar método run()
+     * Ejecuta su comportamiento actualmente asignado
      */
     @Override
     public void run() {
