@@ -4,7 +4,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * TODO Documentación clase BarcoPetrolero
+ * Clase que modela barcos que además son petroleros. Implementa el comportamiento de los barcos petroleros del paso 7,
+ * repostar sus contenedores de petróleo y agua de la zona de repostaje. Una vez realizada esta acción, los barcos petroleros
+ * salen del puerto. La capacidad de sus contenedores está determinada en el constructor
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco

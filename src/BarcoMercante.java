@@ -1,6 +1,14 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Clase que modela barcos que además son mercantes. Implementa el comportamiento de los barcos mercantes del paso 6,
+ * interactuar con la plataforma de carga para descargar su contenido. El número de contenedores está definido por constructor.
+ * Cuando terminan de descargar mueren y no salen del puerto
+ *
+ * @author Juan Pablo García Plaza Pérez
+ * @author José Ángel Concha Carrasco
+ */
 public class BarcoMercante extends Barco {
 
     /**
@@ -32,7 +40,8 @@ public class BarcoMercante extends Barco {
     }
 
     /**
-     * TODO Documentar el método run()
+     * Comportamiento de los barcos mercantes: Además de entrar como un barco de entrada, intenta vaciar todos los
+     * contenedores que carga en la plataforma de carga. La lógica de sincronización la implementa la plataforma de carga
      */
     @Override
     public void run() {
