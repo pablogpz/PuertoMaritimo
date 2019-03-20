@@ -53,14 +53,12 @@ public class BarcoPetrolero extends Barco {
         // Repostará petróleo
         ((ThreadPoolExecutor) executor).submit(() -> {
             while (!petroleoCompleto())
-                ZonaRepostaje.recuperarInstancia().repostarPetroleo(this, CANTIDAD_REPOSTAJE_PETROLEO);
-
+                zonaRepostaje.repostarPetroleo(this, CANTIDAD_REPOSTAJE_PETROLEO);
         });
         // Repostará agua
         ((ThreadPoolExecutor) executor).submit(() -> {
             while (!aguaCompleto())
-                ZonaRepostaje.recuperarInstancia().repostarAgua(this, CANTIDAD_REPOSTAJE_AGUA);
-
+                zonaRepostaje.repostarAgua(this, CANTIDAD_REPOSTAJE_AGUA);
         });
 
         ((ThreadPoolExecutor) executor).shutdown();                     // Da de baja el executor

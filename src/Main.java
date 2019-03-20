@@ -66,8 +66,7 @@ public class Main {
         ZonaRepostaje.recuperarInstancia().registrarContenedores(barcosPetroleros);
         mostrarMensaje("\t\t[" + System.currentTimeMillis() + "] Contenedores de petróleo registrados para barcos petroleros esperados");
         // Ejecuta los barcos petroleros instanciados
-        for (BarcoPetrolero petrolero : barcosPetroleros)
-            ((ThreadPoolExecutor) executor).submit(petrolero);
+        barcosPetroleros.forEach(((ThreadPoolExecutor) executor)::submit);
 
         // CREACIÓN DE GRÚAS. Sus indices comenzarán a partir del 10 para distinguirlas
 

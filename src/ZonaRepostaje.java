@@ -50,11 +50,9 @@ public class ZonaRepostaje {
      * @param barcosPetroleros Colección de barcos petroleros esperados
      */
     public void registrarContenedores(Collection<? extends BarcoPetrolero> barcosPetroleros) {
-        for (BarcoPetrolero barcosPetrolero : barcosPetroleros) {
-            contenPetroleo.put(barcosPetrolero.getIdentificador(),
-                    new ContenedorPetroleo(ContenedorPetroleo.CANT_INICIAL_CONT_PETROLEO,
-                            ContenedorPetroleo.CANTIDAD_MAX_CONT_PETROLEO));
-        }
+        barcosPetroleros.forEach(barcosPetrolero -> contenPetroleo.put(barcosPetrolero.getIdentificador(),
+                new ContenedorPetroleo(ContenedorPetroleo.CANT_INICIAL_CONT_PETROLEO,
+                        ContenedorPetroleo.CANTIDAD_MAX_CONT_PETROLEO)));
     }
 
     /**
