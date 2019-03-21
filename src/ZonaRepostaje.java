@@ -4,7 +4,9 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 /**
- * TODO Documentación clase ZonaRepostaje
+ * Clase que modela el comportamiento de la Zona de Repostaje. Sigue un patrón de diseño Singleton (derivado del plantemiento
+ * de los problemas). Su finalidad es la de albergar los distintos contenedores y gestionar las posibles operaciones que ciertos
+ * barcos determinados pueden realizar con estos. Entre estas funciones destacamos Repostar petróleo y Repostar agua.
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco

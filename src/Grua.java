@@ -1,5 +1,8 @@
 /**
- * // TODO Documentación clase Grua
+ * Clase que modela el comportamiento de cada grúa, cuya finalidad es obtener un cargamento procedente de la Plataforma y
+ * sacarlo de esta. Para que esto sea posible es necesario que el Tipo de cargamento coincida con el Tipo de grúa.
+ * Cada grúa estará definida por un identificador único para cada una y el Tipo de cargamento con el que pueda operar
+ * (además de un comportamiento a seguir al ser invocada como hilo).
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco
@@ -33,7 +36,7 @@ public class Grua implements Runnable {
     }
 
     /**
-     * // TODO Documentar método run()
+     * Ejecuta su comportamiento actualmente asignado
      */
     @Override
     public void run() {

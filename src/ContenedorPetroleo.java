@@ -1,5 +1,7 @@
 /**
- * TODO Documentación clase ContenedorPetroleo
+ * Clase que modela el comportamiento de un contenedor de petróleo que podemos encontrar junto a otros más en la Zona de Repostaje.
+ * Cada contenedor tendrá una capacidad que irá variando a medida que los distintos barcos petroleros vayan accediendo a dichos contenedores.
+ * Estará definido por una cantidad actual y una capacidad máxima.
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco
