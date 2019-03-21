@@ -6,7 +6,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Clase principal del proyecto
+ * Clase principal del proyecto.
+ * Se encarga de solventar los distintos problemas planteados en la práctica Puerto Marítimo.
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco
