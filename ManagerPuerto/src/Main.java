@@ -22,6 +22,13 @@ public class Main {
     public static void main(String[] args) {
         Ventana ventana = new Ventana("Manager Puerto");
         Gson gson = new Gson();
+        String JSONData = "";
+        Properties properties;
+        int barcosDentroPuerto = 0;
+        int contAzucar;
+        int contHarina;
+        int contSal;
+        int total;
 
         try {
             // Inicializa un administrador de seguridad RMI si no existe ya uno
@@ -37,29 +44,30 @@ public class Main {
                     ((IServidorPlataforma) registro.lookup(SERVICIO_CARGAMENTOS_DESCARGADOS));
 
             // Llamada al servicio de barcos dentro del puerto
-            int barcosDentroPuerto = servidorTorreControl.consultarBarcosDentroPuerto();
+            barcosDentroPuerto = servidorTorreControl.consultarBarcosDentroPuerto();
 
             // Llamada al servicio de contenedores descargados
-            String JSONData = servidorPlataforma.obtenerCargamentosDescargados();   // Cadena JSON con los datos
-            Properties properties = gson.fromJson(JSONData, Properties.class);      // Interpretación del JSON
-            int contAzucar = Integer.parseInt(properties.getProperty(CLAVE_AZUCAR));
-            int contHarina = Integer.parseInt(properties.getProperty(CLAVE_HARINA));
-            int contSal = Integer.parseInt(properties.getProperty(CLAVE_SAL));
-            int total = contAzucar + contHarina + contSal;
-
-            // Salida por la ventana creada
-            String salidaPorVentana = "SERVICIO - " + SERVICIO_BARCOS_DENTRO_PUERTO +
-                    "\n     Barcos dentro del puerto : " + barcosDentroPuerto +
-                    "\n\nSERVICIO - " + SERVICIO_CARGAMENTOS_DESCARGADOS +
-                    "\n     Contenedores descargados " +
-                    "\n         Contenedores de Azúcar : " + contAzucar +
-                    "\n         Contenedores de Harina : " + contHarina +
-                    "\n         Contenedores de Sal : " + contSal +
-                    "\n     CONTENEDORES TOTALES DESCARGADOS : " + total;
-            ventana.addText(salidaPorVentana);
+            JSONData = servidorPlataforma.obtenerCargamentosDescargados();      // Cadena JSON con los datos
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
 
+        // Interpretación del JSON
+        properties = gson.fromJson(JSONData, Properties.class);
+        contAzucar = Integer.parseInt(properties.getProperty(CLAVE_AZUCAR));
+        contHarina = Integer.parseInt(properties.getProperty(CLAVE_HARINA));
+        contSal = Integer.parseInt(properties.getProperty(CLAVE_SAL));
+        total = contAzucar + contHarina + contSal;
+
+        // Salida por la ventana creada
+        String salidaPorVentana = "SERVICIO - " + SERVICIO_BARCOS_DENTRO_PUERTO +
+                "\n     Barcos dentro del puerto : " + barcosDentroPuerto +
+                "\n\nSERVICIO - " + SERVICIO_CARGAMENTOS_DESCARGADOS +
+                "\n     Contenedores descargados " +
+                "\n         Contenedores de Azúcar : " + contAzucar +
+                "\n         Contenedores de Harina : " + contHarina +
+                "\n         Contenedores de Sal : " + contSal +
+                "\n     CONTENEDORES TOTALES DESCARGADOS : " + total;
+        ventana.addText(salidaPorVentana);
     }
 }
