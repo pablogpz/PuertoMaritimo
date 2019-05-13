@@ -17,7 +17,7 @@ public class Main {
     private static final int NUM_BARCOS_ENTRADA_SIM = 3;    // Número de barcos de entrada creados para la simulación
     private static final int NUM_BARCOS_SALIDA_SIM = 3;     // Número de barcos de salida creados para la simulación
     private static final int NUM_BARCOS_MERCANTES_SIM = 1;  // Número de barcos mercantes creados para la simulación
-    public static final int NUM_BARCOS_PETROLEROS_SIM = 5;  // Número de barcos petroleros creados para la simulación
+    public static final int NUM_BARCOS_PETROLEROS_SIM = 1;  // Número de barcos petroleros creados para la simulación
 
     private static final int NUM_CONT_AZUCAR_BR = 12;       // Número de contenedores de azúcar que transporta un barco mercante
     private static final int NUM_CONT_HARINA_BR = 5;        // Número de contenedores de harina que transporta un barco mercante
@@ -30,6 +30,9 @@ public class Main {
      * Constructor por defecto. Inicia la simulación
      */
     public Main() {
+        String localhost = "localhost";
+        System.setProperty("java.rmi.server.hostname", localhost);
+
         simulacion();
     }
 
