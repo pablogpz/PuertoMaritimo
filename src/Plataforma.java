@@ -129,6 +129,21 @@ public class Plataforma {
     }
 
     /**
+     * @return Cadena en formato JSON con la cantidad de cargamentos totales descargados por la plataforma
+     */
+    public String obtenerCargamentosDescargados() {
+        String carAzucar = String.valueOf(cargamentosDescargados.get(CLAVE_AZUCAR));
+        String carHarina = String.valueOf(cargamentosDescargados.get(CLAVE_HARINA));
+        String carSal = String.valueOf(cargamentosDescargados.get(CLAVE_SAL));
+
+        return "{\""
+                + CLAVE_AZUCAR + "\" : " + carAzucar + ",\""
+                + CLAVE_HARINA + "\" : " + carHarina + ",\""
+                + CLAVE_SAL + "\" : " + carSal
+                + "}";
+    }
+
+    /**
      * Método accesor del atributo {@link Plataforma:nBarcosMercantes}
      *
      * @return El cargamento almacenado
