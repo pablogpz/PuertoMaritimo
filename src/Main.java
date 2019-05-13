@@ -32,6 +32,7 @@ public class Main {
 
     // Nombre del servicio para consultar el número de barcos dentro del puerto en un momento dado
     private static final String SERVICIO_BARCOS_DENTRO_PUERTO = "BarcosDentroPuerto";
+    private static final String SERVICIO_CARGAMENTOS_DESCARGADOS = "CargamentosDescargados";
 
     /**
      * Constructor por defecto. Inicia la simulación
@@ -115,9 +116,11 @@ public class Main {
 
             // Instancias de servidores
             IServidorTorreControl stubServidorTorreControl = new ServidorTorreControl();
+            IServidorPlataforma stubServidorPlataforma = new ServidorPlataforma();
 
             // Registro de servicios
             registro.rebind(SERVICIO_BARCOS_DENTRO_PUERTO, stubServidorTorreControl);
+            registro.rebind(SERVICIO_CARGAMENTOS_DESCARGADOS, stubServidorPlataforma);
         } catch (RemoteException e) {
             e.printStackTrace();
             return false;
