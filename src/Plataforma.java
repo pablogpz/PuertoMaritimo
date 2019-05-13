@@ -1,3 +1,5 @@
+import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.concurrent.SynchronousQueue;
 
 /**
@@ -10,6 +12,11 @@ import java.util.concurrent.SynchronousQueue;
  * @author José Ángel Concha Carrasco
  */
 public class Plataforma {
+
+    // Claves del diccionario que almacena el número de cargamentos descargados por la plataforma
+    private static final String CLAVE_AZUCAR = "azucar";
+    private static final String CLAVE_HARINA = "harina";
+    private static final String CLAVE_SAL = "sal";
 
     /**
      * Instancia Singleton de la plataforma
@@ -24,11 +31,17 @@ public class Plataforma {
     private SynchronousQueue<TIPO_CARGAMENTO> esperaHarina;         // Cola síncrona para bloquear a la grúa de HARINA
     private SynchronousQueue<TIPO_CARGAMENTO> esperaSal;            // Cola síncrona para bloquear a la grúa de SAL
 
+    private AbstractMap<String, Integer> cargamentosDescargados;    // Colección del número de cargamentos descargados
+
     /**
      * Constructor por defecto
      */
     private Plataforma() {
         activa = true;
+        cargamentosDescargados = new HashMap<>();
+        cargamentosDescargados.put(CLAVE_AZUCAR, 0);
+        cargamentosDescargados.put(CLAVE_HARINA, 0);
+        cargamentosDescargados.put(CLAVE_SAL, 0);
 
         // Todas las colas síncronas tienen política de justicia FIFO
         esperaAzucar = new SynchronousQueue<>(true);
@@ -80,16 +93,20 @@ public class Plataforma {
             switch (grua.getTipo()) {                               // Determina de qué cola síncrona coger el cargamento según el tipo de grúa
                 case AZUCAR:
                     esperaAzucar.take();
+                    cargamentosDescargados.computeIfPresent(CLAVE_AZUCAR, (s, carAzucar) -> carAzucar += 1);
                     break;
                 case HARINA:
                     esperaHarina.take();
+                    cargamentosDescargados.computeIfPresent(CLAVE_HARINA, (s, carHarina) -> carHarina += 1);
                     break;
                 case SAL:
                     esperaSal.take();
+                    cargamentosDescargados.computeIfPresent(CLAVE_SAL, (s, carSal) -> carSal += 1);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         // Notifica el éxito de la grúa de coger un cargamento de la plataforma
         if (getActiva())                                            // Comprueba que la plataforma esté operativa
             imprimirConTimestamp("La grúa (" + grua.getTipo().toString() + ") " + grua.getIdentificador() + " vacía la plataforma");
