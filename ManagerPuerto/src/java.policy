@@ -1,3 +1,5 @@
 grant {
     permission java.net.SocketPermission "*:1099-65535","connect,resolve";
+    permission java.lang.RuntimePermission "accessDeclaredMembers";
+    permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
 };
