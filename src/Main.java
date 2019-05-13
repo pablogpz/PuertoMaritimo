@@ -32,6 +32,7 @@ public class Main {
 
     // Nombre del servicio para consultar el número de barcos dentro del puerto en un momento dado
     private static final String SERVICIO_BARCOS_DENTRO_PUERTO = "BarcosDentroPuerto";
+    // Nombre del servicio para consultar el número de cargamentos descargados
     private static final String SERVICIO_CARGAMENTOS_DESCARGADOS = "CargamentosDescargados";
 
     /**
