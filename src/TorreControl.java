@@ -7,7 +7,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * quieren entrar y salir por la puerta del puerto. Se permite la entrada y salida concurrente mientras circulen en el mismo sentido.
  * Existe preferencia a los barcos de salida y se sigue una política de justicia FIFO en ambos sentidos. Un barco de entrada
  * puede entrar si no hay ningún barco saliendo ni esperando salir, mientas que un barco de salida puede salir si no hay
- * ningún barco entrando
+ * ningún barco entrando.
+ * <p>
+ * Interpretamos que inicialmente el número de barcos dentro del puerto es el número de barcos de salida. Cada vez que
+ * entre un barco de entrada se sumará 1, y cada vez que salga un barco de salida se restará 1.
  *
  * @author Juan Pablo García Plaza Pérez
  * @author José Ángel Concha Carrasco
@@ -18,6 +21,7 @@ public class TorreControl {
     private int barcosEntrando;                     // Contador de barcos entrando
     private int barcosSaliendo;                     // Contador de barcos que están saliendo
     private int barcosEsperandoSalir;               // Contador de barcos esperando por salir
+    private int barcosDentroPuerto;                 // Número de barcos que están dentro del puerto
 
     private Lock monitor;
     private Condition esperaEntrantes;
@@ -30,6 +34,7 @@ public class TorreControl {
         barcosEntrando = 0;
         barcosSaliendo = 0;
         barcosEsperandoSalir = 0;
+        barcosDentroPuerto = Main.NUM_BARCOS_SALIDA_SIM;
 
         monitor = new ReentrantLock(true);
         esperaEntrantes = monitor.newCondition();
@@ -93,6 +98,7 @@ public class TorreControl {
         monitor.lock();
         try {
             // Acción
+            setBarcosDentroPuerto(getBarcosDentroPuerto() + 1); // Un nuevo barco ha entrado en el puerto
             imprimirConTimestamp("El barco " + barco.getIdentificador() + " finalmente ha entrado");
             barcosEntrando--;
             // Protocolo de salida
@@ -106,12 +112,14 @@ public class TorreControl {
     }
 
     /**
+     * a
      * Protocolo de salida de los BARCOS de SALIDA
      */
     public synchronized void finSalida(Barco barco) {
         monitor.lock();
         try {
             // Acción
+            setBarcosDentroPuerto(getBarcosDentroPuerto() - 1); // Un nuevo barco ha salido del puerto
             imprimirConTimestamp("El barco " + barco.getIdentificador() + " finalmente ha salido");
             barcosSaliendo--;
             // Protocolo de salida
@@ -143,6 +151,15 @@ public class TorreControl {
     }
 
     /**
+     * Método accesor del atributo {@link TorreControl#barcosDentroPuerto}
+     *
+     * @return Número de barcos dentro del puerto
+     */
+    public int getBarcosDentroPuerto() {
+        return barcosDentroPuerto;
+    }
+
+    /**
      * Método modificador del atributo {@link TorreControl#barcosEntrando}
      *
      * @param barcosEntrando Nuevo número de barcos entrando
@@ -161,6 +178,16 @@ public class TorreControl {
     }
 
     /**
+     * Método modificador del atributo {@link TorreControl#barcosDentroPuerto}
+     *
+     * @param barcosDentroPuerto Nuevo número de barcos dentro del puerto. Debe ser mayor que 0, sino toma el valor 0
+     */
+    private synchronized void setBarcosDentroPuerto(int barcosDentroPuerto) {
+        if (barcosDentroPuerto >= 0) this.barcosDentroPuerto = barcosDentroPuerto;
+        else this.barcosDentroPuerto = 0;
+    }
+
+    /**
      * @return Instancia Singleton de la TorreControl
      */
     public synchronized static TorreControl recuperarInstancia() {
@@ -176,7 +203,7 @@ public class TorreControl {
      * @param mensaje Mensaje a imprimir
      */
     private void imprimirConTimestamp(String mensaje) {
-        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje);
+        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje +
+                "\tbarcosDentroPuerto = " + barcosDentroPuerto);
     }
-
 }
