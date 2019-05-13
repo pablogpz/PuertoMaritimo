@@ -1,3 +1,6 @@
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -27,6 +30,9 @@ public class Main {
     private static final int CANT_INIC_DEP_PETR_BP = 0;     // Cantidad inicial del depósito de petróleo de los barcos petroleros
     private static final int CANT_INIC_DEP_AGUA_BP = 0;     // Cantidad inicial del depósito de augua de los barcos petroleros
 
+    // Nombre del servicio para consultar el número de barcos dentro del puerto en un momento dado
+    private static final String SERVICIO_BARCOS_DENTRO_PUERTO = "BarcosDentroPuerto";
+
     /**
      * Constructor por defecto. Inicia la simulación
      */
@@ -41,6 +47,11 @@ public class Main {
         List<BarcoPetrolero> barcosPetroleros = new ArrayList<>();
         Executor executor = Executors.newCachedThreadPool();// Executor para ejecutar los barcos según se instancien
         int id = 1;                                         // Identificador asignado a cada barco
+
+        // REGISTRO DE SERVICIOS
+
+        if (registrarServicios()) System.out.println("TODOS LOS SERVICIOS REGISTRADOS");
+        else System.err.println("NO SE PUDIERON REGISTRAR TODOS LOS SERVICIOS");
 
         // CREACIÓN DE BARCOS
 
@@ -88,6 +99,28 @@ public class Main {
         Plataforma.recuperarInstancia().apagarGruas();
 
         mostrarMensaje("FIN del HILO PRINCIPAL");
+    }
+
+    /**
+     * Registra los servicios requeridos
+     *
+     * @return Si todos los servicios pudieron ser registrados
+     */
+    private boolean registrarServicios() {
+        try {
+            Registry registro = LocateRegistry.getRegistry();
+
+            // Instancias de servidores
+            IServidorTorreControl stubServidorTorreControl = new ServidorTorreControl();
+
+            // Registro de servicios
+            registro.rebind(SERVICIO_BARCOS_DENTRO_PUERTO, stubServidorTorreControl);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     /**
