@@ -99,8 +99,9 @@ public class TorreControl {
         try {
             // Acción
             setBarcosDentroPuerto(getBarcosDentroPuerto() + 1); // Un nuevo barco ha entrado en el puerto
-            imprimirConTimestamp("El barco " + barco.getIdentificador() + " finalmente ha entrado");
             barcosEntrando--;
+            imprimirConTimestamp("El barco " + barco.getIdentificador() + " finalmente ha entrado " +
+                    "(barcosDentroPuerto = " + getBarcosDentroPuerto() + ")");
             // Protocolo de salida
             if (barcosEntrando == 0) {
                 imprimirConTimestamp("Entran todos los barcos de entrada");
@@ -120,8 +121,9 @@ public class TorreControl {
         try {
             // Acción
             setBarcosDentroPuerto(getBarcosDentroPuerto() - 1); // Un nuevo barco ha salido del puerto
-            imprimirConTimestamp("El barco " + barco.getIdentificador() + " finalmente ha salido");
             barcosSaliendo--;
+            imprimirConTimestamp("El barco " + barco.getIdentificador() + " finalmente ha salido" +
+                    "(barcosDentroPuerto = " + getBarcosDentroPuerto() + ")");
             // Protocolo de salida
             if (barcosSaliendo == 0) {
                 imprimirConTimestamp("Salen todos los barcos de salida");
@@ -203,7 +205,6 @@ public class TorreControl {
      * @param mensaje Mensaje a imprimir
      */
     private void imprimirConTimestamp(String mensaje) {
-        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje +
-                "\tbarcosDentroPuerto = " + barcosDentroPuerto);
+        System.out.println("\t[" + System.currentTimeMillis() + "] " + mensaje);
     }
 }

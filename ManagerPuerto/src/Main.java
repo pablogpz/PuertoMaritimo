@@ -11,12 +11,15 @@ public class Main {
     private static final String SERVICIO_CARGAMENTOS_DESCARGADOS = "CargamentosDescargados";
 
     public static void main(String[] args) {
-        String localhost = "localhost";
-        System.setProperty("java.rmi.server.hostname", localhost);
 
         try {
-            Registry registro = LocateRegistry.getRegistry(localhost);
+            // Inicializa un administrador de seguridad RMI si no existe ya uno
+            if (System.getSecurityManager() == null) System.setSecurityManager(new SecurityManager());
 
+            // Localiza el registro RMI del servidor
+            Registry registro = LocateRegistry.getRegistry();
+
+            // Creación de recibos para acceder a los servicios
             IServidorTorreControl servidorTorreControl =
                     ((IServidorTorreControl) registro.lookup(SERVICIO_BARCOS_DENTRO_PUERTO));
             IServidorPlataforma servidorPlataforma =

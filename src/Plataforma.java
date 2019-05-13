@@ -1,6 +1,7 @@
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implementa el patrón de diseño Singleton. Esta entidad encapsula toda la lógica de sincronización relacionada con el
@@ -87,8 +88,11 @@ public class Plataforma {
      * @param grua Grua que intenta coger de la plataforma
      */
     public void coger(Grua grua) {
+        TIPO_CARGAMENTO cargamentoDescargado;
+
         // Notifica la voluntad de una grúa de coger un cargamento
         imprimirConTimestamp("La grúa (" + grua.getTipo() + ") " + grua.getIdentificador() + " está bloqueada");
+
         try {
             switch (grua.getTipo()) {                               // Determina de qué cola síncrona coger el cargamento según el tipo de grúa
                 case AZUCAR:
@@ -121,8 +125,12 @@ public class Plataforma {
         try {
             // Pone un elemento más para desbloquear a las grúas esperando y que se apaguen también
             esperaAzucar.put(TIPO_CARGAMENTO.AZUCAR);
+            cargamentosDescargados.computeIfPresent(CLAVE_AZUCAR, (s, carAzucar) -> carAzucar -= 1);
             esperaHarina.put(TIPO_CARGAMENTO.HARINA);
+            cargamentosDescargados.computeIfPresent(CLAVE_HARINA, (s, carHarina) -> carHarina -= 1);
             esperaSal.put(TIPO_CARGAMENTO.SAL);
+            esperaSal.poll(1, TimeUnit.MICROSECONDS);
+            cargamentosDescargados.computeIfPresent(CLAVE_SAL, (s, carSal) -> carSal -= 1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -137,8 +145,8 @@ public class Plataforma {
         String carSal = String.valueOf(cargamentosDescargados.get(CLAVE_SAL));
 
         return "{\""
-                + CLAVE_AZUCAR + "\" : " + carAzucar + ",\""
-                + CLAVE_HARINA + "\" : " + carHarina + ",\""
+                + CLAVE_AZUCAR + "\" : " + carAzucar + ", \""
+                + CLAVE_HARINA + "\" : " + carHarina + ", \""
                 + CLAVE_SAL + "\" : " + carSal
                 + "}";
     }
