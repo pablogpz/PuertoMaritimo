@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+import pcd.util.Ventana;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -19,6 +20,8 @@ public class Main {
     private static final String CLAVE_SAL = "sal";
 
     public static void main(String[] args) {
+        Ventana ventana = new Ventana("Manager Puerto");
+        Gson gson = new Gson();
 
         try {
             // Inicializa un administrador de seguridad RMI si no existe ya uno
@@ -33,20 +36,27 @@ public class Main {
             IServidorPlataforma servidorPlataforma =
                     ((IServidorPlataforma) registro.lookup(SERVICIO_CARGAMENTOS_DESCARGADOS));
 
-            String JSONData = servidorPlataforma.obtenerCargamentosDescargados();
-            Gson gson = new Gson();
-            Properties properties = gson.fromJson(JSONData, Properties.class);
+            // Llamada al servicio de barcos dentro del puerto
+            int barcosDentroPuerto = servidorTorreControl.consultarBarcosDentroPuerto();
 
-            System.out.println("Barcos dentro del puerto : " + servidorTorreControl.consultarBarcosDentroPuerto());
+            // Llamada al servicio de contenedores descargados
+            String JSONData = servidorPlataforma.obtenerCargamentosDescargados();   // Cadena JSON con los datos
+            Properties properties = gson.fromJson(JSONData, Properties.class);      // Interpretación del JSON
             int contAzucar = Integer.parseInt(properties.getProperty(CLAVE_AZUCAR));
             int contHarina = Integer.parseInt(properties.getProperty(CLAVE_HARINA));
             int contSal = Integer.parseInt(properties.getProperty(CLAVE_SAL));
             int total = contAzucar + contHarina + contSal;
-            System.out.println("Contenedores descargados : " +
-                    "\n\tContenedores de Azúcar : " + contAzucar +
-                    "\n\tContenedores de Harina : " + contHarina +
-                    "\n\tContenedores de Sal : " + contSal +
-                    "\nContenedores totales descargados : " + total);
+
+            // Salida por la ventana creada
+            String salidaPorVentana = "SERVICIO - " + SERVICIO_BARCOS_DENTRO_PUERTO +
+                    "\n     Barcos dentro del puerto : " + barcosDentroPuerto +
+                    "\n\nSERVICIO - " + SERVICIO_CARGAMENTOS_DESCARGADOS +
+                    "\n     Contenedores descargados " +
+                    "\n         Contenedores de Azúcar : " + contAzucar +
+                    "\n         Contenedores de Harina : " + contHarina +
+                    "\n         Contenedores de Sal : " + contSal +
+                    "\n     CONTENEDORES TOTALES DESCARGADOS : " + total;
+            ventana.addText(salidaPorVentana);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
