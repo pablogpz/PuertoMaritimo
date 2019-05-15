@@ -5,7 +5,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Arrays;
 import java.util.Properties;
 
 public class Main {
@@ -37,7 +36,6 @@ public class Main {
 
             // Localiza el registro RMI del servidor
             Registry registro = LocateRegistry.getRegistry();
-            System.out.println(Arrays.toString(registro.list()));
 
             // Creación de recibos para acceder a los servicios
             IServidorTorreControl servidorTorreControl =
@@ -50,8 +48,13 @@ public class Main {
 
             // Llamada al servicio de contenedores descargados
             JSONData = servidorPlataforma.obtenerCargamentosDescargados();      // Cadena JSON con los datos
-        } catch (RemoteException | NotBoundException e) {
+        } catch (RemoteException e) {
             e.printStackTrace();
+            System.out.println("NO SE PUDO LOCALIZAR EL SERVIDOR");
+            return;
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+            System.out.println("SERVICIO NO REGISTRADO");
             return;
         }
 
