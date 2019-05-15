@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PuertoMaritimo" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="Main" />
+    <module name="Proyecto_PuertoMaritimo" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="Proyecto_PuertoMaritimo:jar" />
+      </option>
+      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_rmiregistry" />
+    </method>
+  </configuration>
+</component>
