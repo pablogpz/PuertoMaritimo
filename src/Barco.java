@@ -26,6 +26,7 @@ public class Barco implements Runnable {
      * @param comporBarco   Comportamiento inicial del barco
      */
     public Barco(int identificador, ComporBarco comporBarco) {
+        super();
         this.identificador = identificador;
         this.comporBarco = comporBarco;
     }
